@@ -1,0 +1,15 @@
+D:\مجلد جديد (2)\ZeroHourStudio.Application\obj\Debug\net8.0\ZeroHourStudio.Application.csproj.AssemblyReference.cache
+D:\مجلد جديد (2)\ZeroHourStudio.Application\obj\Debug\net8.0\ZeroHourStudio.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\مجلد جديد (2)\ZeroHourStudio.Application\obj\Debug\net8.0\ZeroHourStudio.Application.AssemblyInfoInputs.cache
+D:\مجلد جديد (2)\ZeroHourStudio.Application\obj\Debug\net8.0\ZeroHourStudio.Application.AssemblyInfo.cs
+D:\مجلد جديد (2)\ZeroHourStudio.Application\obj\Debug\net8.0\ZeroHourStudio.Application.csproj.CoreCompileInputs.cache
+D:\مجلد جديد (2)\ZeroHourStudio.Application\bin\Debug\net8.0\ZeroHourStudio.Application.deps.json
+D:\مجلد جديد (2)\ZeroHourStudio.Application\bin\Debug\net8.0\ZeroHourStudio.Application.dll
+D:\مجلد جديد (2)\ZeroHourStudio.Application\bin\Debug\net8.0\ZeroHourStudio.Application.pdb
+D:\مجلد جديد (2)\ZeroHourStudio.Application\bin\Debug\net8.0\ZeroHourStudio.Domain.dll
+D:\مجلد جديد (2)\ZeroHourStudio.Application\bin\Debug\net8.0\ZeroHourStudio.Domain.pdb
+D:\مجلد جديد (2)\ZeroHourStudio.Application\obj\Debug\net8.0\ZeroHour.1073EE53.Up2Date
+D:\مجلد جديد (2)\ZeroHourStudio.Application\obj\Debug\net8.0\ZeroHourStudio.Application.dll
+D:\مجلد جديد (2)\ZeroHourStudio.Application\obj\Debug\net8.0\refint\ZeroHourStudio.Application.dll
+D:\مجلد جديد (2)\ZeroHourStudio.Application\obj\Debug\net8.0\ZeroHourStudio.Application.pdb
+D:\مجلد جديد (2)\ZeroHourStudio.Application\obj\Debug\net8.0\ref\ZeroHourStudio.Application.dll

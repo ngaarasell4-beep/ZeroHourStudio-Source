@@ -1,0 +1,33 @@
+<Application x:Class="ZeroHourStudio.UI.WPF.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ZeroHourStudio.UI.WPF"
+             Startup="Application_Startup"
+             Exit="Application_Exit"
+             DispatcherUnhandledException="Application_DispatcherUnhandledException"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <!-- Value Converters - تسجيل جميع الـ Converters -->
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <local:HexColorToBrushConverter x:Key="HexColorToBrushConverter"/>
+        <local:BytesToReadableSizeConverter x:Key="BytesToReadableSizeConverter"/>
+        <local:EnumToDisplayNameConverter x:Key="EnumToDisplayNameConverter"/>
+        <local:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+
+        <!-- Global Styles -->
+        <Style TargetType="Window">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Background" Value="#F5F5F5"/>
+        </Style>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#333333"/>
+        </Style>
+
+        <Style TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </Application.Resources>
+</Application>

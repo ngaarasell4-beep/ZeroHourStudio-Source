@@ -1,0 +1,94 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "ZeroHourStudio.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/ZeroHourStudio.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ZeroHourStudio.Domain.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ZeroHourStudio.Domain/1.0.0": {
+      "type": "project",
+      "path": "../ZeroHourStudio.Domain/ZeroHourStudio.Domain.csproj",
+      "msbuildProject": "../ZeroHourStudio.Domain/ZeroHourStudio.Domain.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0": [
+      "ZeroHourStudio.Domain >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\ngaar\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "d:\\مجلد جديد (2)\\ZeroHourStudio.Application\\ZeroHourStudio.Application.csproj",
+      "projectName": "ZeroHourStudio.Application",
+      "projectPath": "d:\\مجلد جديد (2)\\ZeroHourStudio.Application\\ZeroHourStudio.Application.csproj",
+      "packagesPath": "C:\\Users\\ngaar\\.nuget\\packages\\",
+      "outputPath": "d:\\مجلد جديد (2)\\ZeroHourStudio.Application\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\ngaar\\AppData\\Roaming\\NuGet\\NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "projectReferences": {
+            "D:\\مجلد جديد (2)\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj": {
+              "projectPath": "D:\\مجلد جديد (2)\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      }
+    },
+    "frameworks": {
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.417/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
