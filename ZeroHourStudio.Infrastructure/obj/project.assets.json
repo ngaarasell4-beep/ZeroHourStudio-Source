@@ -51,11 +51,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\مجلد جديد (2)\\ZeroHourStudio.Infrastructure\\ZeroHourStudio.Infrastructure.csproj",
+      "projectUniqueName": "D:\\ZeroHourStudio\\ZeroHourStudio.Infrastructure\\ZeroHourStudio.Infrastructure.csproj",
       "projectName": "ZeroHourStudio.Infrastructure",
-      "projectPath": "D:\\مجلد جديد (2)\\ZeroHourStudio.Infrastructure\\ZeroHourStudio.Infrastructure.csproj",
+      "projectPath": "D:\\ZeroHourStudio\\ZeroHourStudio.Infrastructure\\ZeroHourStudio.Infrastructure.csproj",
       "packagesPath": "C:\\Users\\ngaar\\.nuget\\packages\\",
-      "outputPath": "D:\\مجلد جديد (2)\\ZeroHourStudio.Infrastructure\\obj\\",
+      "outputPath": "D:\\ZeroHourStudio\\ZeroHourStudio.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\ngaar\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -70,11 +70,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\مجلد جديد (2)\\ZeroHourStudio.Application\\ZeroHourStudio.Application.csproj": {
-              "projectPath": "D:\\مجلد جديد (2)\\ZeroHourStudio.Application\\ZeroHourStudio.Application.csproj"
+            "D:\\ZeroHourStudio\\ZeroHourStudio.Application\\ZeroHourStudio.Application.csproj": {
+              "projectPath": "D:\\ZeroHourStudio\\ZeroHourStudio.Application\\ZeroHourStudio.Application.csproj"
             },
-            "D:\\مجلد جديد (2)\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj": {
-              "projectPath": "D:\\مجلد جديد (2)\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj"
+            "D:\\ZeroHourStudio\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj": {
+              "projectPath": "D:\\ZeroHourStudio\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj"
             }
           }
         }

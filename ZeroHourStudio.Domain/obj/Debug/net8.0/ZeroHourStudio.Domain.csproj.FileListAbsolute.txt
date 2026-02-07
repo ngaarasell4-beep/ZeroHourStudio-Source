@@ -9,3 +9,14 @@ D:\مجلد جديد (2)\ZeroHourStudio.Domain\obj\Debug\net8.0\ZeroHourStudio.D
 D:\مجلد جديد (2)\ZeroHourStudio.Domain\obj\Debug\net8.0\refint\ZeroHourStudio.Domain.dll
 D:\مجلد جديد (2)\ZeroHourStudio.Domain\obj\Debug\net8.0\ZeroHourStudio.Domain.pdb
 D:\مجلد جديد (2)\ZeroHourStudio.Domain\obj\Debug\net8.0\ref\ZeroHourStudio.Domain.dll
+D:\ZeroHourStudio\ZeroHourStudio.Domain\bin\Debug\net8.0\ZeroHourStudio.Domain.deps.json
+D:\ZeroHourStudio\ZeroHourStudio.Domain\bin\Debug\net8.0\ZeroHourStudio.Domain.dll
+D:\ZeroHourStudio\ZeroHourStudio.Domain\bin\Debug\net8.0\ZeroHourStudio.Domain.pdb
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Debug\net8.0\ZeroHourStudio.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Debug\net8.0\ZeroHourStudio.Domain.AssemblyInfoInputs.cache
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Debug\net8.0\ZeroHourStudio.Domain.AssemblyInfo.cs
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Debug\net8.0\ZeroHourStudio.Domain.csproj.CoreCompileInputs.cache
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Debug\net8.0\ZeroHourStudio.Domain.dll
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Debug\net8.0\refint\ZeroHourStudio.Domain.dll
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Debug\net8.0\ZeroHourStudio.Domain.pdb
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Debug\net8.0\ref\ZeroHourStudio.Domain.dll

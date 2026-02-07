@@ -198,7 +198,7 @@ public class UnitDependencyAnalyzer : IUnitDependencyAnalyzer
 
         graph.TotalSizeInBytes = graph.AllNodes
             .Where(n => n.SizeInBytes.HasValue)
-            .Sum(n => n.SizeInBytes.Value);
+            .Sum(n => n.SizeInBytes!.Value);
 
         // تحديد حالة الاكتمال
         double completionPercentage = graph.GetCompletionPercentage();

@@ -20,6 +20,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -42,8 +43,45 @@
             </Grid>
         </Border>
 
+        <!-- Path Selection Row -->
+        <Border Grid.Row="1" Background="#252525" Padding="15,10" Margin="0" BorderThickness="0,0,0,1" BorderBrush="#3F3F3F">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Source Mod Path -->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="مسار المود المصدر:" Foreground="#AAAAAA" 
+                           VerticalAlignment="Center" Margin="0,0,10,0" FontSize="13"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Height="32" VerticalContentAlignment="Center" Padding="10,0"
+                         Text="{Binding SourceModPath, Mode=TwoWay}" 
+                         Background="#333333" Foreground="White" BorderBrush="#444444" 
+                         IsReadOnly="True" Margin="0,0,10,5"/>
+                <Button Grid.Row="0" Grid.Column="2" Content="استعراض..." Padding="20,5" Height="32"
+                        Background="#0078D4" Foreground="White" Margin="0,0,0,5"
+                        Click="BrowseSourcePath_Click"/>
+
+                <!-- Target Mod Path -->
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="مسار المود الهدف:" Foreground="#AAAAAA" 
+                           VerticalAlignment="Center" Margin="0,0,10,0" FontSize="13"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Height="32" VerticalContentAlignment="Center" Padding="10,0"
+                         Text="{Binding TargetModPath, Mode=TwoWay}" 
+                         Background="#333333" Foreground="White" BorderBrush="#444444" 
+                         IsReadOnly="True" Margin="0,0,10,0"/>
+                <Button Grid.Row="1" Grid.Column="2" Content="استعراض..." Padding="20,5" Height="32"
+                        Background="#0078D4" Foreground="White"
+                        Click="BrowseTargetPath_Click"/>
+            </Grid>
+        </Border>
+
         <!-- Main Content -->
-        <Grid Grid.Row="1" Margin="15">
+        <Grid Grid.Row="2" Margin="15">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="350"/>
                 <ColumnDefinition Width="*"/>
@@ -75,7 +113,8 @@
                     </ListBox>
 
                     <Button Grid.Row="2" Content="تحديث القائمة" Margin="15" Padding="10" 
-                            Command="{Binding LoadModCommand}" Background="#444444" Foreground="White"/>
+                            Command="{Binding LoadModCommand}" Background="#444444" Foreground="White"
+                            IsEnabled="{Binding HasSourcePath}"/>
                 </Grid>
             </Border>
 
@@ -132,7 +171,8 @@
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
                             <TextBlock Text="{Binding StatusMessage}" Foreground="#AAAAAA" VerticalAlignment="Center" Margin="0,0,20,0"/>
                             <Button Content="نقل الوحدة ذكياً" Padding="25,10" Background="#0078D4" Foreground="White" FontWeight="Bold"
-                                    Command="{Binding TransferCommand}"/>
+                                    Command="{Binding TransferCommand}"
+                                    IsEnabled="{Binding HasBothPaths}"/>
                         </StackPanel>
                     </Grid>
                 </Grid>
@@ -140,8 +180,8 @@
         </Grid>
 
         <!-- Footer / Status Bar -->
-        <Border Grid.Row="2" Background="#1E1E1E" Padding="10,5" BorderThickness="0,1,0,0" BorderBrush="#3F3F3F">
-            <TextBlock Text="ZeroHour Studio Engine V2 - Phase 1 Ready" Foreground="#666666" FontSize="10"/>
+        <Border Grid.Row="3" Background="#1E1E1E" Padding="10,5" BorderThickness="0,1,0,0" BorderBrush="#3F3F3F">
+            <TextBlock Text="{Binding StatusMessage, FallbackValue='ZeroHour Studio Engine V2 - Phase 1 Ready'}" Foreground="#666666" FontSize="10"/>
         </Border>
     </Grid>
 </Window>

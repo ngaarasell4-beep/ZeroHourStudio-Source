@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\مجلد جديد (2)\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj": {}
+    "D:\\ZeroHourStudio\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj": {}
   },
   "projects": {
-    "D:\\مجلد جديد (2)\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj": {
+    "D:\\ZeroHourStudio\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\مجلد جديد (2)\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj",
+        "projectUniqueName": "D:\\ZeroHourStudio\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj",
         "projectName": "ZeroHourStudio.Domain",
-        "projectPath": "D:\\مجلد جديد (2)\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj",
+        "projectPath": "D:\\ZeroHourStudio\\ZeroHourStudio.Domain\\ZeroHourStudio.Domain.csproj",
         "packagesPath": "C:\\Users\\ngaar\\.nuget\\packages\\",
-        "outputPath": "D:\\مجلد جديد (2)\\ZeroHourStudio.Domain\\obj\\",
+        "outputPath": "D:\\ZeroHourStudio\\ZeroHourStudio.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\ngaar\\AppData\\Roaming\\NuGet\\NuGet.Config"

@@ -1,0 +1,6 @@
+D:\ZeroHourStudio\ZeroHourStudio.Tests\bin\Debug\net8.0-windows\CoverletSourceRootsMapping_ZeroHourStudio.Tests
+D:\ZeroHourStudio\ZeroHourStudio.Tests\obj\Debug\net8.0-windows\ZeroHourStudio.Tests.csproj.AssemblyReference.cache
+D:\ZeroHourStudio\ZeroHourStudio.Tests\obj\Debug\net8.0-windows\ZeroHourStudio.Tests.GeneratedMSBuildEditorConfig.editorconfig
+D:\ZeroHourStudio\ZeroHourStudio.Tests\obj\Debug\net8.0-windows\ZeroHourStudio.Tests.AssemblyInfoInputs.cache
+D:\ZeroHourStudio\ZeroHourStudio.Tests\obj\Debug\net8.0-windows\ZeroHourStudio.Tests.AssemblyInfo.cs
+D:\ZeroHourStudio\ZeroHourStudio.Tests\obj\Debug\net8.0-windows\ZeroHourStudio.Tests.csproj.CoreCompileInputs.cache
