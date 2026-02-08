@@ -15,6 +15,7 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
         <conv:ButtonImageToIconConverter x:Key="IconConverter"/>
+        <conv:SeverityColorConverter x:Key="SeverityColorConverter"/>
     </Window.Resources>
 
     <Grid>
@@ -173,35 +174,93 @@
                         </TextBlock>
                     </Border>
 
-                    <!-- Dependency Tree -->
-                    <DockPanel Grid.Row="3">
-                        <TextBlock DockPanel.Dock="Top" Text="شجرة التبعيات (W3D, DDS, Audio)" Foreground="#AAAAAA" FontSize="12" Margin="0,0,0,8"/>
-                        <TreeView Background="#252525" Foreground="White" BorderBrush="#3F3F3F"
-                                  ItemsSource="{Binding CurrentGraph.RootNode.Dependencies}"
-                                  VirtualizingPanel.IsVirtualizing="True">
-                            <TreeView.ItemTemplate>
-                                <HierarchicalDataTemplate ItemsSource="{Binding Dependencies}">
-                                    <StackPanel Orientation="Horizontal" Margin="2">
-                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="12"/>
-                                        <TextBlock Text="{Binding Type, StringFormat=' [{0}]'}" Foreground="#888888" FontSize="11" Margin="4,0,0,0"/>
-                                        <TextBlock Foreground="#00CC66" FontSize="10" Margin="6,0,0,0">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Text" Value="✓"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Status}" Value="Missing">
-                                                            <Setter Property="Text" Value="✗"/>
-                                                            <Setter Property="Foreground" Value="#FF4444"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </HierarchicalDataTemplate>
-                            </TreeView.ItemTemplate>
-                        </TreeView>
-                    </DockPanel>
+                    <!-- Tabs: Dependencies & Diagnostics -->
+                    <TabControl Grid.Row="3" Background="Transparent" BorderThickness="0" Margin="0,0,0,10">
+                        <TabControl.Resources>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="TabItem">
+                                            <Border Name="Border" BorderThickness="0,0,0,2" BorderBrush="Transparent" Margin="0,0,10,0" Padding="10,5">
+                                                <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" Margin="0,2"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="Border" Property="BorderBrush" Value="#0078D4"/>
+                                                    <Setter Property="Foreground" Value="#0078D4"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="False">
+                                                    <Setter Property="Foreground" Value="#AAAAAA"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </TabControl.Resources>
+
+                        <!-- Tab 1: Dependencies -->
+                        <TabItem Header="شجرة التبعيات">
+                            <DockPanel Margin="0,10,0,0">
+                                <TreeView Background="#252525" Foreground="White" BorderBrush="#3F3F3F"
+                                          ItemsSource="{Binding CurrentGraph.RootNode.Dependencies}"
+                                          VirtualizingPanel.IsVirtualizing="True">
+                                    <TreeView.ItemTemplate>
+                                        <HierarchicalDataTemplate ItemsSource="{Binding Dependencies}">
+                                            <StackPanel Orientation="Horizontal" Margin="2">
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="12"/>
+                                                <TextBlock Text="{Binding Type, StringFormat=' [{0}]'}" Foreground="#888888" FontSize="11" Margin="4,0,0,0"/>
+                                                <TextBlock Foreground="#00CC66" FontSize="10" Margin="6,0,0,0">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Text" Value="✓"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Status}" Value="Missing">
+                                                                    <Setter Property="Text" Value="✗"/>
+                                                                    <Setter Property="Foreground" Value="#FF4444"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </HierarchicalDataTemplate>
+                                    </TreeView.ItemTemplate>
+                                </TreeView>
+                            </DockPanel>
+                        </TabItem>
+
+                        <!-- Tab 2: Diagnostics -->
+                        <TabItem Header="تشخيص الأخطاء">
+                            <Grid Margin="0,10,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <Button Grid.Row="0" Content="بدء الفحص الشامل" Command="{Binding AuditCommand}" 
+                                        Background="#333333" Foreground="White" BorderBrush="#555555" Height="30" Margin="0,0,0,10"/>
+
+                                <ListView Grid.Row="1" ItemsSource="{Binding AuditIssues}" Background="#252525" Foreground="White" BorderThickness="0">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="النوع" Width="80">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Severity}" Foreground="{Binding Severity, Converter={StaticResource SeverityColorConverter}}"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn> 
+                                            <GridViewColumn Header="الرسالة" Width="300" DisplayMemberBinding="{Binding Message}"/>
+                                            <GridViewColumn Header="الموقع" Width="150" DisplayMemberBinding="{Binding Location}"/>
+                                            <GridViewColumn Header="الفئة" Width="100" DisplayMemberBinding="{Binding Category}"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
 
                     <!-- Actions -->
                     <Grid Grid.Row="4" Margin="0,10,0,0">

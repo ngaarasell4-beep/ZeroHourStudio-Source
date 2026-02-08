@@ -1,0 +1,84 @@
+═════════════════════════════════════════════════════
+ZERO HOUR WEAPON EXTRACTION - MONITORING LOG
+Started: 08/02/2026 02:36:18 ص
+═════════════════════════════════════════════════════
+
+[0.002s] FACTION_EXTRACT | D:\gfr\project x | START | Beginning faction extraction
+[0.003s] FACTION_EXTRACT | D:\gfr\project x | ERROR | Object directory not found
+[0.003s] FACTION_LIST | BUILD | COMPLETE | 0 factions extracted
+    Details: Factions:  | Total units: 0
+[1.053s] UNIT_ANALYSIS | AirF_AmericaInfantryColonelBurton | START | Faction=AmericaAirForceGeneral, Type=SageUnit
+[1.156s] WEAPON_ANALYSIS | AirF_AmericaInfantryColonelBurton | START | Beginning analysis
+[1.163s] WEAPON_ANALYSIS | AirF_AmericaInfantryColonelBurton | COMPLETE | 0 accepted weapons
+[1.166s] UNIT_ANALYSIS | AirF_AmericaInfantryColonelBurton | COMPLETE | Weapons=0, Deps=1, Complete=0%
+    Details: Found=0, Missing=0, Time=113ms
+[2.416s] UNIT_ANALYSIS | AmericaBattleShip | START | Faction=Naval, Type=SageUnit
+[2.560s] WEAPON_ANALYSIS | AmericaBattleShip | START | Beginning analysis
+[2.560s] WEAPON_ANALYSIS | AmericaBattleShip | COMPLETE | 0 accepted weapons
+[2.562s] UNIT_ANALYSIS | AmericaBattleShip | COMPLETE | Weapons=0, Deps=12, Complete=0%
+    Details: Found=0, Missing=0, Time=146ms
+[3.485s] UNIT_ANALYSIS | AmericaInfantryBiohazardTech | START | Faction=America, Type=SageUnit
+[3.718s] WEAPON_ANALYSIS | AmericaInfantryBiohazardTech | START | Beginning analysis
+[3.718s] WEAPON_ANALYSIS | AmericaInfantryBiohazardTech | COMPLETE | 0 accepted weapons
+[3.721s] UNIT_ANALYSIS | AmericaInfantryBiohazardTech | COMPLETE | Weapons=0, Deps=1, Complete=0%
+    Details: Found=0, Missing=0, Time=236ms
+[4.731s] UNIT_ANALYSIS | AmericanVanguardAttackDrone | START | Faction=America, Type=SageUnit
+[4.806s] WEAPON_ANALYSIS | AmericanVanguardAttackDrone | START | Beginning analysis
+[4.807s] WEAPON_ANALYSIS | AmericanVanguardAttackDrone | COMPLETE | 0 accepted weapons
+[4.808s] UNIT_ANALYSIS | AmericanVanguardAttackDrone | COMPLETE | Weapons=0, Deps=12, Complete=0%
+    Details: Found=0, Missing=0, Time=77ms
+[5.287s] UNIT_ANALYSIS | AmericaTankAcolyte | START | Faction=America, Type=SageUnit
+[5.389s] WEAPON_ANALYSIS | AmericaTankAcolyte | START | Beginning analysis
+[5.389s] WEAPON_ANALYSIS | AmericaTankAcolyte | COMPLETE | 0 accepted weapons
+[5.391s] UNIT_ANALYSIS | AmericaTankAcolyte | COMPLETE | Weapons=0, Deps=13, Complete=0%
+    Details: Found=0, Missing=0, Time=103ms
+[5.696s] UNIT_ANALYSIS | AmericaTankLaserCrusader | START | Faction=America, Type=SageUnit
+[5.723s] WEAPON_ANALYSIS | AmericaTankLaserCrusader | START | Beginning analysis
+[5.724s] WEAPON_ANALYSIS | AmericaTankLaserCrusader | COMPLETE | 0 accepted weapons
+[5.726s] UNIT_ANALYSIS | AmericaTankLaserCrusader | COMPLETE | Weapons=0, Deps=4, Complete=0%
+    Details: Found=0, Missing=0, Time=29ms
+[6.474s] UNIT_ANALYSIS | AmericaVehicleBradley | START | Faction=America, Type=SageUnit
+[6.574s] WEAPON_ANALYSIS | AmericaVehicleBradley | START | Beginning analysis
+[6.574s] WEAPON_ANALYSIS | AmericaVehicleBradley | COMPLETE | 0 accepted weapons
+[6.576s] UNIT_ANALYSIS | AmericaVehicleBradley | COMPLETE | Weapons=0, Deps=19, Complete=0%
+    Details: Found=0, Missing=0, Time=102ms
+[7.215s] UNIT_ANALYSIS | AmericaVehicleMRLS | START | Faction=America, Type=SageUnit
+[7.296s] WEAPON_ANALYSIS | AmericaVehicleMRLS | START | Beginning analysis
+[7.296s] WEAPON_ANALYSIS | AmericaVehicleMRLS | COMPLETE | 0 accepted weapons
+[7.299s] UNIT_ANALYSIS | AmericaVehicleMRLS | COMPLETE | Weapons=0, Deps=10, Complete=0%
+    Details: Found=0, Missing=0, Time=84ms
+[7.864s] UNIT_ANALYSIS | AmericaVehicleStrykerIFV | START | Faction=America, Type=SageUnit
+[7.975s] WEAPON_ANALYSIS | AmericaVehicleStrykerIFV | START | Beginning analysis
+[7.976s] WEAPON_ANALYSIS | AmericaVehicleStrykerIFV | COMPLETE | 0 accepted weapons
+[7.977s] UNIT_ANALYSIS | AmericaVehicleStrykerIFV | COMPLETE | Weapons=0, Deps=10, Complete=0%
+    Details: Found=0, Missing=0, Time=113ms
+[8.507s] UNIT_ANALYSIS | ChinaInfantryDisruptor | START | Faction=China, Type=SageUnit
+[8.609s] WEAPON_ANALYSIS | ChinaInfantryDisruptor | START | Beginning analysis
+[8.610s] WEAPON_ANALYSIS | ChinaInfantryDisruptor | COMPLETE | 0 accepted weapons
+[8.611s] UNIT_ANALYSIS | ChinaInfantryDisruptor | COMPLETE | Weapons=0, Deps=1, Complete=0%
+    Details: Found=0, Missing=0, Time=103ms
+[9.133s] UNIT_ANALYSIS | ChinaInfantryVolunteerSquad | START | Faction=China, Type=SageUnit
+[9.406s] WEAPON_ANALYSIS | ChinaInfantryVolunteerSquad | START | Beginning analysis
+[9.406s] WEAPON_ANALYSIS | ChinaInfantryVolunteerSquad | COMPLETE | 0 accepted weapons
+[9.407s] UNIT_ANALYSIS | ChinaInfantryVolunteerSquad | COMPLETE | Weapons=0, Deps=8, Complete=0%
+    Details: Found=0, Missing=0, Time=273ms
+[9.755s] UNIT_ANALYSIS | ChinaTankGattling | START | Faction=China, Type=SageUnit
+[9.774s] WEAPON_ANALYSIS | ChinaTankGattling | START | Beginning analysis
+[9.774s] WEAPON_ANALYSIS | ChinaTankGattling | COMPLETE | 0 accepted weapons
+[9.775s] UNIT_ANALYSIS | ChinaTankGattling | COMPLETE | Weapons=0, Deps=1, Complete=0%
+    Details: Found=0, Missing=0, Time=20ms
+[10.417s] UNIT_ANALYSIS | ChinaVehicleHan | START | Faction=China, Type=SageUnit
+[10.519s] WEAPON_ANALYSIS | ChinaVehicleHan | START | Beginning analysis
+[10.520s] WEAPON_ANALYSIS | ChinaVehicleHan | COMPLETE | 0 accepted weapons
+[10.521s] UNIT_ANALYSIS | ChinaVehicleHan | COMPLETE | Weapons=0, Deps=1, Complete=0%
+    Details: Found=0, Missing=0, Time=103ms
+[11.089s] UNIT_ANALYSIS | ChinaVehicleTwinFang | START | Faction=China, Type=SageUnit
+[11.114s] WEAPON_ANALYSIS | ChinaVehicleTwinFang | START | Beginning analysis
+[11.115s] WEAPON_ANALYSIS | ChinaVehicleTwinFang | COMPLETE | 0 accepted weapons
+[11.116s] UNIT_ANALYSIS | ChinaVehicleTwinFang | COMPLETE | Weapons=0, Deps=7, Complete=0%
+    Details: Found=0, Missing=0, Time=26ms
+
+═════════════════════════════════════════════════════
+MONITORING COMPLETE - 59 entries
+Duration: 00:00:13
+═════════════════════════════════════════════════════

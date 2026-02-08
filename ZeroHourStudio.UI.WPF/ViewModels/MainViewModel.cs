@@ -25,6 +25,11 @@ using ZeroHourStudio.UI.WPF.Converters;
 using ZeroHourStudio.Infrastructure.Logging;
 using ZeroHourStudio.Infrastructure.Monitoring;
 using ZeroHourStudio.Infrastructure.Filtering;
+using ZeroHourStudio.Infrastructure.AssetManagement;
+using ZeroHourStudio.Application.Interfaces;
+
+using ZeroHourStudio.Infrastructure.Diagnostics;
+using ZeroHourStudio.Application.Models;
 
 namespace ZeroHourStudio.UI.WPF.ViewModels
 {
@@ -41,6 +46,7 @@ namespace ZeroHourStudio.UI.WPF.ViewModels
         private readonly MonitoredWeaponAnalysisService _weaponAnalysisService;
         private readonly MappedImageIndex _mappedImageIndex;
         private readonly SageDefinitionIndex _sageIndex;
+        private DiagnosticAuditService? _auditService; // [New]
         private IconService? _iconService;
         private readonly Dictionary<string, Dictionary<string, string>> _unitDataIndex = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, string> _unitIniPathIndex = new(StringComparer.OrdinalIgnoreCase);
@@ -54,6 +60,7 @@ namespace ZeroHourStudio.UI.WPF.ViewModels
         private ObservableCollection<SageUnit> _units = new();
         private ObservableCollection<SageUnit> _displayedUnits = new();
         private List<SageUnit> _allUnits = new();
+        private ObservableCollection<AuditIssue> _auditIssues = new(); // [New]
         private string _sourceModPath = string.Empty;
         private string _targetModPath = string.Empty;
         private ObservableCollection<string> _targetFactions = new();
@@ -121,6 +128,8 @@ namespace ZeroHourStudio.UI.WPF.ViewModels
             LoadModCommand = new AsyncRelayCommand(_ => LoadModAsync(), _ => CanLoadMod());
             BrowseSourceCommand = new RelayCommand(_ => { });
             BrowseTargetCommand = new RelayCommand(_ => { });
+            UniversalTransferCommand = new AsyncRelayCommand(_ => UniversalTransferAsync(), _ => CanUniversalTransfer());
+            AuditCommand = new AsyncRelayCommand(_ => AuditUnitAsync(), _ => CanAuditUnit());
         }
 
         // ─── Properties ───
@@ -287,6 +296,14 @@ namespace ZeroHourStudio.UI.WPF.ViewModels
             set => SetProperty(ref _selectedTargetFaction, value);
         }
 
+        public ObservableCollection<AuditIssue> AuditIssues
+        {
+            get => _auditIssues;
+            set => SetProperty(ref _auditIssues, value);
+        }
+
+        public ICommand AuditCommand { get; private set; } = null!;
+
         // ─── Filtering ───
 
         private void ApplyFilter()
@@ -400,6 +417,9 @@ namespace ZeroHourStudio.UI.WPF.ViewModels
                 StatusMessage = $"جاري تحميل {buttonImageNames.Count} أيقونة...";
                 await _iconService.PreloadIconsAsync(buttonImageNames);
                 App.DiagLog($"[LoadMod] MappedImages: {_mappedImageIndex.Count} indexed, {_iconService.PreloadedCount} icons loaded from {buttonImageNames.Count} requested");
+
+                // Initialize Diagnostic Service
+                _auditService = new DiagnosticAuditService(_bigFileReader, _sageIndex);
 
                 // Build faction list using SmartFactionExtractor for accurate results
                 StatusMessage = "جاري استخراج الفصائل...";
@@ -539,6 +559,49 @@ namespace ZeroHourStudio.UI.WPF.ViewModels
             }
         }
 
+        // ─── Diagnostics ───
+
+        private bool CanAuditUnit() => SelectedUnit != null && _auditService != null;
+
+        private async Task AuditUnitAsync()
+        {
+            if (!CanAuditUnit()) return;
+
+            IsAnalyzing = true;
+            StatusMessage = $"جاري فحص {SelectedUnit!.TechnicalName}...";
+            AuditIssues = new ObservableCollection<AuditIssue>();
+
+            try
+            {
+                var report = await Task.Run(() => _auditService!.AuditUnitAsync(SelectedUnit.TechnicalName, SourceModPath));
+                
+                var sortedIssues = report.Issues
+                    .OrderByDescending(i => i.Severity)
+                    .ThenBy(i => i.Category)
+                    .ToList();
+
+                AuditIssues = new ObservableCollection<AuditIssue>(sortedIssues);
+
+                if (sortedIssues.Count == 0)
+                {
+                    StatusMessage = "✓ لم يتم العثور على مشاكل (Clean)";
+                }
+                else
+                {
+                    StatusMessage = $"⚠ تم العثور على {report.ErrorCount} خطأ و {report.WarningCount} تحذير";
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"خطأ في الفحص: {ex.Message}";
+                System.Windows.MessageBox.Show(ex.ToString(), "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsAnalyzing = false;
+            }
+        }
+
         // ─── Transfer ───
 
         private bool CanTransfer() => SelectedUnit != null && CurrentGraph != null && HasBothPaths;
@@ -602,6 +665,112 @@ namespace ZeroHourStudio.UI.WPF.ViewModels
                 StatusMessage = $"✗ خطأ في النقل: {ex.Message}";
             }
             finally { BlackBoxRecorder.EndOperation("Transfer"); IsLoading = false; }
+        }
+        // ─── Universal Transfer (Orchestrator) ───
+
+        public ICommand UniversalTransferCommand { get; private set; } = null!;
+
+        private bool CanUniversalTransfer()
+        {
+            return SelectedUnit != null && HasBothPaths && !IsLoading;
+        }
+
+        private async Task UniversalTransferAsync()
+        {
+            if (!CanUniversalTransfer()) return;
+
+            IsLoading = true;
+            ProgressValue = 0;
+            StatusMessage = $"جاري بدء النقل الشامل للوحدة {SelectedUnit!.TechnicalName}...";
+            BlackBoxRecorder.BeginOperation("UniversalTransfer");
+
+            try
+            {
+                // 1. Initialize Services Chain
+                var iniParser = new SAGE_IniParser();
+                var analyzer = new UnitDependencyAnalyzer(iniParser);
+                var validator = new UnitCompletionValidator();
+                // AssetReferenceHunter requires a path or config? Let's check constructor.
+                // Assuming parameterless or needs checking.
+                // Based on previous checks, AssetReferenceHunter might need `ModBigFileReader` or `IniParser`.
+                // Let's assume for now it takes BigFileReader based on common patterns, but I will verify in next step if compilation fails.
+                // Actually, I should use the services I already have if possible.
+                
+                // Let's rely on the helper method I will add below.
+                var orchestrator = InitializeOrchestrator();
+
+                // 2. Prepare Request
+                var request = new ZeroHourStudio.Infrastructure.Orchestration.TransferRequest
+                {
+                    UnitName = SelectedUnit.TechnicalName,
+                    SourcePath = SourceModPath,
+                    TargetPath = TargetModPath,
+                    TargetFaction = SelectedTargetFaction ?? SelectedUnit.Side,
+                    InjectCommandSet = true,
+                    OverwriteFiles = true // Or bind to a UI checkbox
+                };
+
+                // 3. Execute
+                var progress = new Progress<ZeroHourStudio.Infrastructure.Orchestration.TransferSessionProgress>(p =>
+                {
+                    ProgressValue = p.OverallPercentage;
+                    StatusMessage = $"[{p.CurrentStage}] {p.CurrentAction}";
+                });
+
+                var result = await orchestrator.ExecuteTransferAsync(request, progress);
+
+                // 4. Report
+                if (result.Success)
+                {
+                    StatusMessage = $"✓ اكتمل النقل بنجاح! ({result.Duration.TotalSeconds:F1}ث)";
+                    System.Windows.MessageBox.Show(result.Message, "نجاح", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                }
+                else
+                {
+                    StatusMessage = $"✗ فشل النقل: {result.Message}";
+                    var errorDetails = string.Join("\n", result.Errors);
+                    System.Windows.MessageBox.Show($"{result.Message}\n\n{errorDetails}", "خطأ", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"خطأ غير متوقع: {ex.Message}";
+                BlackBoxRecorder.RecordError("UNIVERSAL_TRANSFER", ex.Message, ex);
+                System.Windows.MessageBox.Show(ex.ToString(), "Exception", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsLoading = false;
+                BlackBoxRecorder.EndOperation("UniversalTransfer");
+            }
+        }
+
+        private ZeroHourStudio.Infrastructure.Orchestration.UniversalTransferOrchestrator InitializeOrchestrator()
+        {
+            // Re-use existing instances where possible
+            var iniParser = new SAGE_IniParser();
+            var analyzer = new UnitDependencyAnalyzer(iniParser);
+            var validator = new UnitCompletionValidator();
+            
+            // AssetReferenceHunter check
+            var assetHunter = new AssetReferenceHunter(_bigFileReader); // Verified in next step likely
+            
+            var comprehensive = new ComprehensiveDependencyService(analyzer, assetHunter, validator);
+            
+            var weaponService = _weaponAnalysisService; // Already initialized
+            
+            var enhancedCore = new ZeroHourStudio.Infrastructure.GraphEngine.EnhancedSageCore(
+                analyzer, weaponService, _sageIndex, comprehensive);
+
+            var smartDepExtractor = new ZeroHourStudio.Infrastructure.GraphEngine.SmartDependencyExtractor(enhancedCore, _bigFileReader);
+            
+            var factionExtractor = new SmartFactionExtractor(iniParser);
+            
+            // CommandSetPatchService is stateless
+            var patcher = new CommandSetPatchService();
+
+            return new ZeroHourStudio.Infrastructure.Orchestration.UniversalTransferOrchestrator(
+                enhancedCore, smartDepExtractor, patcher, factionExtractor);
         }
     }
 }

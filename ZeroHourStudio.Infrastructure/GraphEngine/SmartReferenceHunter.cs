@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ZeroHourStudio.Application.Models;
 using ZeroHourStudio.Infrastructure.DependencyAnalysis;
 
 namespace ZeroHourStudio.Infrastructure.GraphEngine
@@ -119,9 +120,10 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
                     {
                         foreach (var node in deps.AllNodes)
                         {
-                            if (!string.IsNullOrEmpty(node.Id) && node.Id != objectName)
+                            // In Application.Models.DependencyNode, we use Id or Name
+                            if (!string.IsNullOrEmpty(node.Name) && !node.Name.Equals(objectName, StringComparison.OrdinalIgnoreCase))
                             {
-                                reverseDeps.Add(node.Id);
+                                reverseDeps.Add(node.Name);
                             }
                         }
                     }

@@ -1,5 +1,6 @@
 using ZeroHourStudio.Application.Models;
-using ZeroHourStudio.Infrastructure.Archives;
+using ZeroHourStudio.Application.Interfaces;
+using ZeroHourStudio.Infrastructure.Archives; // Left for DependencyType only if needed, otherwise clean up
 
 namespace ZeroHourStudio.Infrastructure.AssetManagement;
 
@@ -9,7 +10,7 @@ namespace ZeroHourStudio.Infrastructure.AssetManagement;
 /// </summary>
 public class AssetReferenceHunter
 {
-    private readonly BigArchiveManager? _archiveManager;
+    private readonly IBigFileReader? _archiveReader;
     private readonly string? _gameAssetsPath;
 
     /// <summary>
@@ -32,9 +33,9 @@ public class AssetReferenceHunter
         { ".w3x", DependencyType.VisualEffect },
     };
 
-    public AssetReferenceHunter(BigArchiveManager? archiveManager = null, string? gameAssetsPath = null)
+    public AssetReferenceHunter(IBigFileReader? archiveReader = null, string? gameAssetsPath = null)
     {
-        _archiveManager = archiveManager;
+        _archiveReader = archiveReader;
         _gameAssetsPath = gameAssetsPath;
     }
 
@@ -84,16 +85,15 @@ public class AssetReferenceHunter
         };
 
         // البحث في الأرشيف أولاً
-        if (_archiveManager != null)
+        if (_archiveReader != null)
         {
-            bool existsInArchive = _archiveManager.FileExists(fileName);
+            bool existsInArchive = await _archiveReader.FileExistsAsync("", fileName);
             if (existsInArchive)
             {
-                var fileInfo = _archiveManager.GetFileInfo(fileName);
                 node.Status = AssetStatus.Found;
-                node.SizeInBytes = fileInfo?.Size;
                 node.LastModified = DateTime.UtcNow;
-                return await Task.FromResult(node);
+                // SizeInBytes not available in IBigFileReader directly without extraction or extension
+                return node;
             }
         }
 
@@ -108,13 +108,13 @@ public class AssetReferenceHunter
                 node.FullPath = fullPath;
                 node.SizeInBytes = fileInfo.Length;
                 node.LastModified = fileInfo.LastWriteTimeUtc;
-                return await Task.FromResult(node);
+                return node;
             }
         }
 
         // إذا لم نجد الملف
         node.Status = AssetStatus.Missing;
-        return await Task.FromResult(node);
+        return node;
     }
 
     /// <summary>
@@ -129,40 +129,38 @@ public class AssetReferenceHunter
 
         var results = new List<DependencyNode>();
 
-        if (_archiveManager != null)
+        if (_archiveReader != null)
         {
-            var archiveFiles = _archiveManager.GetFileList();
+            var archiveFiles = await _archiveReader.ReadAsync("");
             var matchingFiles = archiveFiles
                 .Where(f => extensionsToSearch.Any(ext => f.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             foreach (var file in matchingFiles)
             {
-                var fileInfo = _archiveManager.GetFileInfo(file);
                 var node = new DependencyNode
                 {
                     Name = file,
                     Type = assetType,
-                    Status = AssetStatus.Found,
-                    SizeInBytes = fileInfo?.Size
+                    Status = AssetStatus.Found
                 };
 
                 results.Add(node);
             }
         }
 
-        return await Task.FromResult(results);
+        return results;
     }
 
     /// <summary>
     /// التحقق من وجود مورد معين في الفهرس
     /// </summary>
-    public bool IsAssetIndexed(string assetName)
+    public async Task<bool> IsAssetIndexedAsync(string assetName)
     {
-        if (string.IsNullOrWhiteSpace(assetName) || _archiveManager == null)
+        if (string.IsNullOrWhiteSpace(assetName) || _archiveReader == null)
             return false;
 
-        return _archiveManager.FileExists(assetName);
+        return await _archiveReader.FileExistsAsync("", assetName);
     }
 
     /// <summary>
@@ -172,10 +170,10 @@ public class AssetReferenceHunter
     {
         var stats = new AssetStatistics();
 
-        if (_archiveManager == null)
+        if (_archiveReader == null)
             return stats;
 
-        var files = _archiveManager.GetFileList().ToList();
+        var files = await _archiveReader.ReadAsync("");
 
         foreach (var file in files)
         {
@@ -190,12 +188,10 @@ public class AssetReferenceHunter
             else if (extension == ".w3x")
                 stats.VisualEffectCount++;
 
-            var fileInfo = _archiveManager.GetFileInfo(file);
-            if (fileInfo != null && fileInfo.Size > 0)
-                stats.TotalSizeInBytes += fileInfo.Size;
+            // Size calculation removed as IBigFileReader does not verify size efficiently
         }
 
-        return await Task.FromResult(stats);
+        return stats;
     }
 }
 
@@ -215,5 +211,5 @@ public class AssetStatistics
     public double GetTotalSizeInMB() => TotalSizeInBytes / (1024.0 * 1024.0);
 
     public override string ToString() =>
-        $"Assets: {Model3DCount} models, {TextureCount} textures, {AudioCount} audio, {VisualEffectCount} effects - {GetTotalSizeInMB():F2} MB";
+        $"Assets: {Model3DCount} models, {TextureCount} textures, {AudioCount} audio, {VisualEffectCount} effects - Total Count: {TotalAssetCount}";
 }

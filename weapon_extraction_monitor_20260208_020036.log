@@ -1,0 +1,29 @@
+═════════════════════════════════════════════════════
+ZERO HOUR WEAPON EXTRACTION - MONITORING LOG
+Started: 08/02/2026 02:00:36 ص
+═════════════════════════════════════════════════════
+
+[0.002s] FACTION_EXTRACT | D:\gfr\project x | START | Beginning faction extraction
+[0.003s] FACTION_EXTRACT | D:\gfr\project x | ERROR | Object directory not found
+[0.003s] FACTION_LIST | BUILD | COMPLETE | 0 factions extracted
+    Details: Factions:  | Total units: 0
+[1.116s] UNIT_ANALYSIS | AirF_AmericaJetAurora | START | Faction=AmericaAirForceGeneral, Type=SageUnit
+[1.222s] WEAPON_ANALYSIS | AirF_AmericaJetAurora | START | Beginning analysis
+[1.228s] WEAPON_ANALYSIS | AirF_AmericaJetAurora | COMPLETE | 0 accepted weapons
+[1.232s] UNIT_ANALYSIS | AirF_AmericaJetAurora | COMPLETE | Weapons=0, Deps=1, Complete=0%
+    Details: Found=0, Missing=0, Time=116ms
+[2.786s] UNIT_ANALYSIS | AirF_AmericaInfantryColonelBurton | START | Faction=AmericaAirForceGeneral, Type=SageUnit
+[2.801s] WEAPON_ANALYSIS | AirF_AmericaInfantryColonelBurton | START | Beginning analysis
+[2.802s] WEAPON_ANALYSIS | AirF_AmericaInfantryColonelBurton | COMPLETE | 0 accepted weapons
+[2.804s] UNIT_ANALYSIS | AirF_AmericaInfantryColonelBurton | COMPLETE | Weapons=0, Deps=1, Complete=0%
+    Details: Found=0, Missing=0, Time=18ms
+[3.832s] UNIT_ANALYSIS | AmericaBattleShip | START | Faction=Naval, Type=SageUnit
+[3.964s] WEAPON_ANALYSIS | AmericaBattleShip | START | Beginning analysis
+[3.964s] WEAPON_ANALYSIS | AmericaBattleShip | COMPLETE | 0 accepted weapons
+[3.966s] UNIT_ANALYSIS | AmericaBattleShip | COMPLETE | Weapons=0, Deps=12, Complete=0%
+    Details: Found=0, Missing=0, Time=133ms
+[4.877s] UNIT_ANALYSIS | AmericaInfantryBiohazardTech | START | Faction=America, Type=SageUnit
+[5.110s] WEAPON_ANALYSIS | AmericaInfantryBiohazardTech | START | Beginning analysis
+[5.110s] WEAPON_ANALYSIS | AmericaInfantryBiohazardTech | COMPLETE | 0 accepted weapons
+[5.114s] UNIT_ANALYSIS | AmericaInfantryBiohazardTech | COMPLETE | Weapons=0, Deps=1, Complete=0%
+    Details: Found=0, Missing=0, Time=236ms

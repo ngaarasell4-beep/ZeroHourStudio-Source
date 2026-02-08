@@ -12,7 +12,10 @@ namespace ZeroHourStudio.Infrastructure.Services
     /// <summary>
     /// خدمة متخصصة لتحليل تبعيات الأسلحة بالكامل
     /// </summary>
-    public class WeaponAnalysisService
+    /// <summary>
+    /// خدمة متخصصة لتحليل تبعيات الأسلحة بالكامل
+    /// </summary>
+    public class WeaponAnalysisService : IWeaponAnalysisService
     {
         private readonly IIniParser _iniParser;
         private readonly IBigFileReader _bigFileReader;

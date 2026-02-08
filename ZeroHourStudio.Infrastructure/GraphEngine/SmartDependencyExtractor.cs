@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ZeroHourStudio.Application.Interfaces;
 using ZeroHourStudio.Infrastructure.Archives;
 
 namespace ZeroHourStudio.Infrastructure.GraphEngine
@@ -14,7 +15,7 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
     public class SmartDependencyExtractor
     {
         private readonly EnhancedSageCore _engine;
-        private readonly BigArchiveManager _archiveManager;
+        private readonly IBigFileReader? _archiveReader;
 
         public event Action<string>? OnExtractionUpdate;
         public event Action<int, int>? OnProgress; // current, total
@@ -23,10 +24,10 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
         private List<ExtractedFile> _extractedFiles = new List<ExtractedFile>();
         private string? _currentDestination;
 
-        public SmartDependencyExtractor(EnhancedSageCore engine, BigArchiveManager archiveManager = null)
+        public SmartDependencyExtractor(EnhancedSageCore engine, IBigFileReader? archiveReader = null)
         {
             _engine = engine ?? throw new ArgumentNullException(nameof(engine));
-            _archiveManager = archiveManager;
+            _archiveReader = archiveReader;
         }
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
         {
             try
             {
-                if (_archiveManager == null)
+                if (_archiveReader == null)
                 {
                     OnWarning?.Invoke("⚠️ No archive manager available");
                     return false;
@@ -106,35 +107,43 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
 
                 OnExtractionUpdate?.Invoke($"📄 Extracting: {fileName}");
 
-                var fileData = await _archiveManager.ExtractFileAsync(fileName);
-                if (fileData != null && fileData.Length > 0)
+                var outputPath = Path.Combine(destination, fileName);
+                var directory = Path.GetDirectoryName(outputPath);
+                
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                 {
-                    var outputPath = Path.Combine(destination, fileName);
-                    var directory = Path.GetDirectoryName(outputPath);
-                    
-                    if (!Directory.Exists(directory))
-                    {
-                        Directory.CreateDirectory(directory);
-                    }
+                    Directory.CreateDirectory(directory);
+                }
 
-                    await File.WriteAllBytesAsync(outputPath, fileData);
+                // Use IBigFileReader to extract directly to disk
+                // We pass empty string as filePath because ModBigFileReader handles the lookup internally
+                await _archiveReader.ExtractAsync("", fileName, outputPath);
+
+                if (File.Exists(outputPath))
+                {
+                    var fileInfo = new FileInfo(outputPath);
                     
                     _extractedFiles.Add(new ExtractedFile
                     {
                         FileName = fileName,
                         FullPath = outputPath,
-                        Size = fileData.Length,
+                        Size = fileInfo.Length,
                         ExtractedAt = DateTime.Now
                     });
 
-                    OnExtractionUpdate?.Invoke($"✅ Extracted: {fileName} ({fileData.Length} bytes)");
+                    OnExtractionUpdate?.Invoke($"✅ Extracted: {fileName} ({fileInfo.Length} bytes)");
                     return true;
                 }
                 else
                 {
-                    OnWarning?.Invoke($"⚠️ File not found or empty: {fileName}");
+                    OnWarning?.Invoke($"⚠️ Extraction reported success but file not found: {fileName}");
                     return false;
                 }
+            }
+            catch (FileNotFoundException)
+            {
+                OnWarning?.Invoke($"⚠️ File not found in archives: {fileName}");
+                return false;
             }
             catch (Exception ex)
             {
@@ -170,7 +179,7 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
             // Try to delete the destination directory if empty
             try
             {
-                if (Directory.Exists(_currentDestination) && !Directory.EnumerateFileSystemEntries(_currentDestination).Any())
+                if (!string.IsNullOrEmpty(_currentDestination) && Directory.Exists(_currentDestination) && !Directory.EnumerateFileSystemEntries(_currentDestination).Any())
                 {
                     Directory.Delete(_currentDestination);
                 }
@@ -269,13 +278,16 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
                 }
             }
 
-            _extractedFiles.Add(new ExtractedFile
+            if (File.Exists(iniPath))
             {
-                FileName = "ExtractedDefinitions.ini",
-                FullPath = iniPath,
-                Size = new FileInfo(iniPath).Length,
-                ExtractedAt = DateTime.Now
-            });
+                _extractedFiles.Add(new ExtractedFile
+                {
+                    FileName = "ExtractedDefinitions.ini",
+                    FullPath = iniPath,
+                    Size = new FileInfo(iniPath).Length,
+                    ExtractedAt = DateTime.Now
+                });
+            }
 
             result.IniFileCreated = iniPath;
         }

@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ZeroHourStudio.Domain.Entities;
+using ZeroHourStudio.Application.Models;
+using ZeroHourStudio.Application.Interfaces;
 using ZeroHourStudio.Infrastructure.Services;
 using ZeroHourStudio.Infrastructure.DependencyAnalysis;
+using ZeroHourStudio.Infrastructure.Parsers;
 
 namespace ZeroHourStudio.Infrastructure.GraphEngine
 {
@@ -14,10 +16,14 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
     /// </summary>
     public class EnhancedSageCore
     {
+        // الخدمات الأساسية
         private readonly UnitDependencyAnalyzer _dependencyAnalyzer;
-        private readonly WeaponAnalysisService _weaponAnalysisService;
+        private readonly IWeaponAnalysisService _weaponAnalysisService;
         private readonly SageDefinitionIndex _definitionIndex;
         private readonly ComprehensiveDependencyService _comprehensiveDependencyService;
+        
+        // المحلل اللغوي
+        private readonly SAGE_IniParser _iniParser;
 
         // Events for status updates
         public event Action<string>? OnStatusUpdate;
@@ -25,7 +31,7 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
         public event Action<string>? OnWarning;
         public event Action<string>? OnError;
 
-        // Cached data
+        // Cache using Application.Models.DependencyNode
         public Dictionary<string, string> ObjectDefinitionMap { get; private set; } = new Dictionary<string, string>();
         public Dictionary<string, string> ObjectTypeMap { get; private set; } = new Dictionary<string, string>();
         public Dictionary<string, DependencyNode> DependencyGraph { get; private set; } = new Dictionary<string, DependencyNode>();
@@ -35,7 +41,7 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
 
         public EnhancedSageCore(
             UnitDependencyAnalyzer dependencyAnalyzer,
-            WeaponAnalysisService weaponAnalysisService,
+            IWeaponAnalysisService weaponAnalysisService,
             SageDefinitionIndex definitionIndex,
             ComprehensiveDependencyService comprehensiveDependencyService)
         {
@@ -124,12 +130,16 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
                     {
                         foreach (var node in dependencies.AllNodes)
                         {
-                            if (!string.IsNullOrEmpty(node.DdsFilePath))
-                                package.Assets.Add(node.DdsFilePath);
-                            if (!string.IsNullOrEmpty(node.W3dFilePath))
-                                package.Assets.Add(node.W3dFilePath);
-                            if (!string.IsNullOrEmpty(node.AudioFilePath))
-                                package.Assets.Add(node.AudioFilePath);
+                            // Map generic node to specific assets based on Type
+                            if (node.Type == DependencyType.Texture)
+                                package.Assets.Add(node.Name);
+                            else if (node.Type == DependencyType.Model3D)
+                                package.Assets.Add(node.Name);
+                            else if (node.Type == DependencyType.Audio)
+                                package.Assets.Add(node.Name);
+                            // Also check generic FullPath if available
+                            else if (!string.IsNullOrEmpty(node.FullPath))
+                                package.Assets.Add(node.FullPath);
                         }
                     }
                 }
@@ -138,15 +148,15 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
                 if (includeWeapons)
                 {
                     var weaponAnalysis = await _weaponAnalysisService.AnalyzeWeaponDependenciesAsync(
-                        objectName, objectName, new Dictionary<string, string>());
+                        objectName, LoadedPath ?? "");
                     
-                    if (weaponAnalysis?.WeaponChains != null)
+                    if (weaponAnalysis?.Weapons != null)
                     {
-                        foreach (var chain in weaponAnalysis.WeaponChains)
+                        foreach (var chain in weaponAnalysis.Weapons)
                         {
                             package.WeaponChain.Add(chain.WeaponName ?? "");
-                            package.Assets.AddRange(chain.TextureFiles ?? Enumerable.Empty<string>());
-                            package.Assets.AddRange(chain.ModelFiles ?? Enumerable.Empty<string>());
+                            // Add related files (includes models, textures, sounds, etc.)
+                            package.Assets.AddRange(chain.RelatedFiles ?? Enumerable.Empty<string>());
                         }
                     }
                 }
@@ -226,7 +236,9 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
                         {
                             DependencyGraph[objectName] = new DependencyNode
                             {
-                                UnitId = objectName
+                                Id = objectName,
+                                Name = objectName,
+                                Type = DependencyType.ObjectINI
                             };
                         }
                     }

@@ -19,7 +19,14 @@ namespace ZeroHourStudio.Infrastructure.Services
     /// ✓ حدود واضحة
     /// ✓ رفض تلقائي للناقص
     /// </summary>
-    public class MonitoredWeaponAnalysisService
+    /// <summary>
+    /// خدمة محسّنة لتحليل الأسلحة مع مراقبة شاملة
+    /// ✓ نظام مراقبة كامل
+    /// ✓ فلترة صارمة
+    /// ✓ حدود واضحة
+    /// ✓ رفض تلقائي للناقص
+    /// </summary>
+    public class MonitoredWeaponAnalysisService : IWeaponAnalysisService
     {
         private readonly IIniParser _iniParser;
         private readonly IBigFileReader _bigFileReader;

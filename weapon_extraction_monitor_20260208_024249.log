@@ -1,0 +1,24 @@
+═════════════════════════════════════════════════════
+ZERO HOUR WEAPON EXTRACTION - MONITORING LOG
+Started: 08/02/2026 02:42:49 ص
+═════════════════════════════════════════════════════
+
+[0.002s] FACTION_EXTRACT | D:\gfr\project x | START | Beginning faction extraction
+[0.003s] FACTION_EXTRACT | D:\gfr\project x | ERROR | Object directory not found
+[0.003s] FACTION_LIST | BUILD | COMPLETE | 0 factions extracted
+    Details: Factions:  | Total units: 0
+[0.851s] UNIT_ANALYSIS | AirF_AmericaInfantryColonelBurton | START | Faction=AmericaAirForceGeneral, Type=SageUnit
+[0.991s] WEAPON_ANALYSIS | AirF_AmericaInfantryColonelBurton | START | Beginning analysis
+[0.995s] WEAPON_ANALYSIS | AirF_AmericaInfantryColonelBurton | COMPLETE | 0 accepted weapons
+[0.999s] UNIT_ANALYSIS | AirF_AmericaInfantryColonelBurton | COMPLETE | Weapons=0, Deps=1, Complete=0%
+    Details: Found=0, Missing=0, Time=148ms
+[3.400s] UNIT_ANALYSIS | AirF_AmericaJetAurora | START | Faction=AmericaAirForceGeneral, Type=SageUnit
+[3.415s] WEAPON_ANALYSIS | AirF_AmericaJetAurora | START | Beginning analysis
+[3.415s] WEAPON_ANALYSIS | AirF_AmericaJetAurora | COMPLETE | 0 accepted weapons
+[3.417s] UNIT_ANALYSIS | AirF_AmericaJetAurora | COMPLETE | Weapons=0, Deps=1, Complete=0%
+    Details: Found=0, Missing=0, Time=17ms
+
+═════════════════════════════════════════════════════
+MONITORING COMPLETE - 11 entries
+Duration: 00:00:04
+═════════════════════════════════════════════════════
