@@ -514,14 +514,34 @@ namespace ZeroHourStudio.UI.WPF.ViewModels
                         RootNode = resolvedGraph.RootNode,
                         AllNodes = resolvedGraph.AllNodes,
                         Status = resolvedGraph.Status,
+                        FoundCount = resolvedGraph.FoundCount,
+                        MissingCount = resolvedGraph.MissingCount,
+                        UnitId = resolvedGraph.UnitId,
+                        UnitName = resolvedGraph.UnitName,
+                        MaxDepth = resolvedGraph.MaxDepth,
+                        TotalSizeInBytes = resolvedGraph.TotalSizeInBytes,
+                        CreatedAt = resolvedGraph.CreatedAt,
+                        Notes = resolvedGraph.Notes,
                         WeaponAnalysis = weaponAnalysis,
                         WeaponChains = weaponAnalysis.Weapons
                     };
 
                     CurrentGraph = enhanced;
                     WeaponAnalysisCount = enhanced.WeaponAnalysisCount;
+
+                    // Fallback: count weapon nodes from dependency graph if weapon analysis returned 0
+                    if (WeaponAnalysisCount == 0)
+                    {
+                        WeaponAnalysisCount = enhanced.AllNodes
+                            .Count(n => n.Type == ZeroHourStudio.Application.Models.DependencyType.Weapon);
+                    }
+
                     TotalDependencyCount = enhanced.DependencyCount;
                     AnalysisCount++;
+
+                    // تحديث Key Inspector
+                    PopulateKeyInspector(unit.TechnicalName, unitData);
+
                     CommandManager.InvalidateRequerySuggested();
 
                     analyzeSw.Stop();

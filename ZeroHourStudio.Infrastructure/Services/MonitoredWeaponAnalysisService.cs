@@ -232,8 +232,11 @@ namespace ZeroHourStudio.Infrastructure.Services
 
         private async Task<List<string>> AnalyzeVisualEffectsAsync(List<WeaponChain> weapons, string modPath)
         {
+            await Task.CompletedTask; // Satisfy async requirement
             return weapons.Where(w => !string.IsNullOrWhiteSpace(w.VisualEffect))
-                         .Select(w => w.VisualEffect).Distinct().ToList();
+                         .Select(w => w.VisualEffect!)
+                         .Distinct()
+                         .ToList();
         }
 
         private async Task ValidateDependenciesAsync(WeaponDependencyAnalysis analysis, string modPath)

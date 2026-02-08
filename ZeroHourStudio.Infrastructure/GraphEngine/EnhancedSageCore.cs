@@ -21,9 +21,6 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
         private readonly IWeaponAnalysisService _weaponAnalysisService;
         private readonly SageDefinitionIndex _definitionIndex;
         private readonly ComprehensiveDependencyService _comprehensiveDependencyService;
-        
-        // المحلل اللغوي
-        private readonly SAGE_IniParser _iniParser;
 
         // Events for status updates
         public event Action<string>? OnStatusUpdate;

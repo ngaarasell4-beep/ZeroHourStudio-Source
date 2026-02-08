@@ -693,7 +693,7 @@ public sealed class WeaponPackageResolver
         // ═══ F. Icon (اختياري) ═══
         package.Icon = ResolveWeaponIcon(weaponName, unitName);
 
-        File.AppendAllText(logPath, $"Final package: {package.AllDependencies.Count} deps, Weapon:{package.Weapon.Found}, Proj:{package.Projectile.Found}, FX:{package.FX.Found}, Audio:{package.Audio.Found}\n");
+        File.AppendAllText(logPath, $"Final package: {package.AllDependencies.Count} deps, Weapon:{package.Weapon?.Found ?? false}, Proj:{package.Projectile?.Found ?? false}, FX:{package.FX?.Found ?? false}, Audio:{package.Audio?.Found ?? false}\n");
 
         return package;
     }

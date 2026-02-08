@@ -52,6 +52,11 @@ public class SmartDependencyResolver : IDependencyResolver
         string? objectIniPath,
         Dictionary<string, string>? unitData = null)
     {
+        // 🔧 Clear caches at the beginning of each analysis to prevent memory bloat
+        _visitedNodes.Clear();
+        _cachedNodes.Clear();
+        _visitedBlocks.Clear();
+        
         var graph = new UnitDependencyGraph
         {
             UnitId = unitName,
@@ -136,12 +141,31 @@ public class SmartDependencyResolver : IDependencyResolver
 
                 // Store manifest for transfer validation
                 _lastManifest = manifest;
+
+                // ═══ 3b. Add unit base dependencies from manifest (models, audio, armor, etc.) ═══
+                foreach (var dep in manifest.UnitDependencies)
+                {
+                    if (!graph.AllNodes.Any(n => n.Name == dep.Name))
+                    {
+                        graph.AllNodes.Add(dep);
+                        rootNode.Dependencies.Add(dep);
+                    }
+                }
+
+                // ═══ 3c. Run legacy INI parsing for file-level dependencies FIRST ═══
+                // This must run BEFORE DeepSageChainTraversal to populate graph with initial nodes
+                // Note: _visitedNodes already cleared at method start
+                await ParseIniDependenciesAsync(rootNode, sourceModPath, graph);
+
+                // ═══ 3d. Deep SAGE chain traversal for named references ═══
+                // This will use the already-parsed nodes from step 3c
+                // Note: _visitedBlocks already cleared at method start
+                DeepSageChainTraversal(rootNode, graph, sourceModPath);
             }
             else
             {
                 // Fallback: legacy regex-based resolution (limited)
-                _visitedNodes.Clear();
-                _cachedNodes.Clear();
+                // Note: caches already cleared at method start
                 await ParseIniDependenciesAsync(rootNode, sourceModPath, graph);
             }
 
@@ -1550,6 +1574,10 @@ public class SmartDependencyResolver : IDependencyResolver
         commentIdx = filePath.IndexOf("//", StringComparison.Ordinal);
         if (commentIdx >= 0)
             filePath = filePath.Substring(0, commentIdx);
+        
+        // 🔧 Fix: Remove SAGE placeholder paths like {MISSING}\ or {PLACEHOLDER}\
+        filePath = Regex.Replace(filePath, @"\{[A-Za-z_]+\}[/\\]?", "");
+        
         // السماح فقط بأحرف آمنة
         filePath = Regex.Replace(filePath, @"[\\\/]+", "/");
         // إزالة المسافات الزائدة

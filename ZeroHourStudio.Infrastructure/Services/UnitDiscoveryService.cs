@@ -171,6 +171,7 @@ public class UnitDiscoveryService
                 .Where(s => !string.IsNullOrWhiteSpace(s))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .OrderBy(s => s)
+                .Select(s => s!) // Fix CS8619
                 .ToList();
 
             if (factions.Count == 0)
