@@ -37,7 +37,7 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
         public async Task<ExtractionResult> ExtractPhysicalFilesAsync(
             EnhancedSageCore.TransferPackage package, 
             string destination,
-            ExtractionOptions options = null)
+            ExtractionOptions? options = null)
         {
             options ??= new ExtractionOptions();
             var result = new ExtractionResult { Destination = destination };

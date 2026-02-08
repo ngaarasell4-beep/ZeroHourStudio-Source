@@ -29,7 +29,7 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
         /// Deep search for all references to an object
         /// البحث العميق عن كل المراجع لكائن معين
         /// </summary>
-        public async Task<SearchResult> DeepSearchAsync(string objectName, SearchOptions options = null)
+        public async Task<SearchResult> DeepSearchAsync(string objectName, SearchOptions? options = null)
         {
             options ??= new SearchOptions();
             var result = new SearchResult { ObjectName = objectName };

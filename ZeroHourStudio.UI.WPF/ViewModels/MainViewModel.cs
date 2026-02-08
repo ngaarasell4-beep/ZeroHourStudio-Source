@@ -27,9 +27,7 @@ using ZeroHourStudio.Infrastructure.Monitoring;
 using ZeroHourStudio.Infrastructure.Filtering;
 using ZeroHourStudio.Infrastructure.AssetManagement;
 using ZeroHourStudio.Application.Interfaces;
-
 using ZeroHourStudio.Infrastructure.Diagnostics;
-using ZeroHourStudio.Application.Models;
 
 namespace ZeroHourStudio.UI.WPF.ViewModels
 {
@@ -538,9 +536,6 @@ namespace ZeroHourStudio.UI.WPF.ViewModels
 
                     TotalDependencyCount = enhanced.DependencyCount;
                     AnalysisCount++;
-
-                    // تحديث Key Inspector
-                    PopulateKeyInspector(unit.TechnicalName, unitData);
 
                     CommandManager.InvalidateRequerySuggested();
 

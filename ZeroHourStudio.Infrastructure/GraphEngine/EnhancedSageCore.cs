@@ -51,7 +51,7 @@ namespace ZeroHourStudio.Infrastructure.GraphEngine
         /// <summary>
         /// Initialize the engine with game data path
         /// </summary>
-        public async Task InitializeEngineAsync(string gamePath, IProgress<string> progress = null)
+        public async Task InitializeEngineAsync(string gamePath, IProgress<string>? progress = null)
         {
             try
             {
