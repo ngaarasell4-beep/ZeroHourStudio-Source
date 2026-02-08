@@ -1,8 +1,10 @@
 # 📇 فهرس المشروع الكامل - ZeroHour Studio V2
 
-**الإصدار:** 4.0 (Phase 4 Complete)  
-**التاريخ:** 6 فبراير 2026  
+**الإصدار:** 4.1 (SageDeepCore)  
+**التاريخ:** 7 فبراير 2026  
 **الحالة:** ✅ مكتمل وجاهز للاختبار  
+
+> 📖 **المفهوم التقني:** انظر [CONCEPT.md](CONCEPT.md) لفكرة SageDeepCore ومحرك نقل الوحدات  
 
 ## 📊 الإحصائيات الموحدة النهائية
 
@@ -35,9 +37,53 @@ Total ........................... 47+ ملف | ~7885 سطر
 
 ---
 
+## 🧠 مخطط استخراج الوحدة (Blueprint)
+
+هذا المخطط يوضح سلسلة الاستخراج الفعلية التي يعتمد عليها المحرك:
+
+```
+[Logic_Module]
+  - Object_Definition: Health, BuildCost, BuildTime
+  - Module_System: StealthUpdate, ProductionUpdate
+  - KindOf_Flags: SELECTABLE, CAN_ATTACK
+  - Locomotor_Set: MovementData
+  - Armor_Matrix: Armor.ini
+
+[Weapon_System_Chain]
+  - Weapon_Slots: Primary/Secondary
+  - Projectile_Data: Projectile.ini
+  - Fire_Effects: FXList.ini
+  - Damage_FX: ExplosionList
+
+[Visual_Hierarchy]
+  - W3D_Hierarchy: Art.big (Model)
+  - Material_Shader: DDS/TGA
+  - Particle_System: FXList
+  - Damage_States: DeathFX/Reskin
+
+[User_Interface_UI]
+  - Command_Set: CommandSet.ini
+  - Command_Button: CommandButton.ini
+  - Mapped_Images: MappedImages
+  - String_Dictionary: English.big
+
+[Audio_Landscape]
+  - Engine_Sounds: Audio.ini
+  - Weapon_Sounds: Audio.ini
+  - Voice_Bank: Audio.ini
+
+[System_Dependencies]
+  - Big_File_Mounting: !!Priority
+  - Path_Indexing: Data/INI + BIG
+  - Dependency_Linker: UnitDependencyGraph
+```
+
+---
+
 ## 📁 الهيكل الكامل للمشروع
 
 ```
+
 ZeroHourStudio/                                    [حل .NET 8]
 │
 ├── ZeroHourStudio.sln                            [ملف الحل الرئيسي]

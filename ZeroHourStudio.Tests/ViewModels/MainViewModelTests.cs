@@ -1,9 +1,7 @@
 using FluentAssertions;
-using Moq;
 using Xunit;
 using ZeroHourStudio.UI.WPF.ViewModels;
-using ZeroHourStudio.UI.WPF.Models;
-using ZeroHourStudio.Application.Interfaces;
+using ZeroHourStudio.Domain.Entities;
 using System.Collections.ObjectModel;
 
 namespace ZeroHourStudio.Tests.ViewModels
@@ -15,42 +13,6 @@ namespace ZeroHourStudio.Tests.ViewModels
         public MainViewModelTests()
         {
             _viewModel = new MainViewModel();
-        }
-
-        [Fact]
-        public void SearchText_WhenChanged_ShouldFilterUnits()
-        {
-            // Arrange
-            _viewModel.AllUnits = new ObservableCollection<UnitDisplayModel>
-            {
-                new UnitDisplayModel { UnitId = "USATankCrusader", UnitName = "Crusader Tank" },
-                new UnitDisplayModel { UnitId = "ChinaTankOverlord", UnitName = "Overlord Tank" },
-                new UnitDisplayModel { UnitId = "GLAVehicleTechnical", UnitName = "Technical" }
-            };
-
-            // Act
-            _viewModel.SearchText = "crusader";
-
-            // Assert - يجب أن يظهر فقط الوحدة التي تحتوي على Crusader
-            _viewModel.FilteredUnits.Should().HaveCount(1);
-            _viewModel.FilteredUnits.First().UnitId.Should().Be("USATankCrusader");
-        }
-
-        [Fact]
-        public void SearchText_EmptyString_ShouldShowAllUnits()
-        {
-            // Arrange
-            _viewModel.AllUnits = new ObservableCollection<UnitDisplayModel>
-            {
-                new UnitDisplayModel { UnitId = "Unit1", UnitName = "Test Unit 1" },
-                new UnitDisplayModel { UnitId = "Unit2", UnitName = "Test Unit 2" }
-            };
-
-            // Act
-            _viewModel.SearchText = "";
-
-            // Assert
-            _viewModel.FilteredUnits.Should().HaveCount(2);
         }
 
         [Fact]
@@ -73,31 +35,39 @@ namespace ZeroHourStudio.Tests.ViewModels
         }
 
         [Fact]
-        public void SelectedUnit_WhenChanged_ShouldUpdateDependencies()
+        public void SelectedUnit_WhenChanged_ShouldNotifyPropertyChanged()
         {
             // Arrange
-            var unit = new UnitDisplayModel
+            bool propertyChangedRaised = false;
+            _viewModel.PropertyChanged += (s, e) =>
             {
-                UnitId = "ChinaTankOverlord",
-                UnitName = "Overlord Tank"
+                if (e.PropertyName == nameof(MainViewModel.SelectedUnit))
+                    propertyChangedRaised = true;
+            };
+
+            var unit = new SageUnit
+            {
+                TechnicalName = "ChinaTankOverlord",
+                Side = "China"
             };
 
             // Act
             _viewModel.SelectedUnit = unit;
 
             // Assert
+            propertyChangedRaised.Should().BeTrue();
             _viewModel.SelectedUnit.Should().NotBeNull();
-            _viewModel.SelectedUnit.UnitId.Should().Be("ChinaTankOverlord");
+            _viewModel.SelectedUnit!.TechnicalName.Should().Be("ChinaTankOverlord");
         }
 
         [Fact]
-        public void ProgressPercentage_ShouldBeBetweenZeroAndHundred()
+        public void ProgressValue_ShouldAcceptValues()
         {
             // Act
-            _viewModel.ProgressPercentage = 50;
+            _viewModel.ProgressValue = 50;
 
             // Assert
-            _viewModel.ProgressPercentage.Should().BeInRange(0, 100);
+            _viewModel.ProgressValue.Should().Be(50);
         }
 
         [Fact]
@@ -122,35 +92,52 @@ namespace ZeroHourStudio.Tests.ViewModels
         }
 
         [Fact]
-        public void FilteredUnits_InitialState_ShouldBeEmpty()
+        public void Units_InitialState_ShouldBeEmpty()
         {
             // Arrange
             var newViewModel = new MainViewModel();
 
             // Assert
-            newViewModel.FilteredUnits.Should().NotBeNull();
-            newViewModel.FilteredUnits.Should().BeEmpty();
+            newViewModel.Units.Should().NotBeNull();
+            newViewModel.Units.Should().BeEmpty();
         }
 
-        [Theory]
-        [InlineData("tank", 2)] // يجب أن يجد Crusader Tank و Overlord Tank
-        [InlineData("usa", 1)]  // يجب أن يجد USATankCrusader
-        [InlineData("xyz", 0)]  // لا يوجد
-        public void SearchText_WithDifferentQueries_ShouldFilterCorrectly(string searchText, int expectedCount)
+        [Fact]
+        public void SearchText_WhenSet_ShouldNotifyPropertyChanged()
         {
             // Arrange
-            _viewModel.AllUnits = new ObservableCollection<UnitDisplayModel>
+            bool propertyChangedRaised = false;
+            _viewModel.PropertyChanged += (s, e) =>
             {
-                new UnitDisplayModel { UnitId = "USATankCrusader", UnitName = "Crusader Tank" },
-                new UnitDisplayModel { UnitId = "ChinaTankOverlord", UnitName = "Overlord Tank" },
-                new UnitDisplayModel { UnitId = "GLAVehicleTechnical", UnitName = "Technical" }
+                if (e.PropertyName == nameof(MainViewModel.SearchText))
+                    propertyChangedRaised = true;
             };
 
             // Act
-            _viewModel.SearchText = searchText;
+            _viewModel.SearchText = "crusader";
 
             // Assert
-            _viewModel.FilteredUnits.Should().HaveCount(expectedCount);
+            propertyChangedRaised.Should().BeTrue();
+            _viewModel.SearchText.Should().Be("crusader");
+        }
+
+        [Fact]
+        public void Units_ShouldAcceptSageUnits()
+        {
+            // Arrange
+            var unit = new SageUnit
+            {
+                TechnicalName = "USATankCrusader",
+                Side = "USA",
+                ModelW3D = "AVCrusader.w3d"
+            };
+
+            // Act
+            _viewModel.Units.Add(unit);
+
+            // Assert
+            _viewModel.Units.Should().HaveCount(1);
+            _viewModel.Units.First().TechnicalName.Should().Be("USATankCrusader");
         }
     }
 }

@@ -1,0 +1,12 @@
+Remaining work items
+
+1) INI subfolders
+- INI/Default: ControlBarScheme.ini, Crate.ini, multiplayer.ini, Music.ini, ObjectCreationList.ini, PlayerTemplate.ini, Roads.ini, Science.ini, ShellMenuScheme.ini, SoundEffects.ini, SpecialPower.ini, Speech.ini, Terrain.ini, Upgrade.ini, Video.ini, Voice.ini, Water.ini, Weather.ini, Webpages.ini
+- INI/Object: America/*, China/*, Europe/*, GLA/*, Neutral/*, Russia/* plus remaining root object files (CivilianBuilding.ini, CountryFlags.ini, FakeRiders.ini, Hulk.ini, NatureProp.ini, NatureUnit.ini)
+- INI/MappedImages: HandCreated/*.ini, TextureSize_512/*.ini
+
+2) Data Window/Art/Maps
+- Window/Menus: remaining .wnd files not reviewed yet
+- Window root: ControlBar.wnd, GeneralsExpPoints.wnd, GenPowersShortcutBar*.wnd
+- Art: Terrain, Textures (if any manifest/list files)
+- Maps: MapCache.ini and any map-related references

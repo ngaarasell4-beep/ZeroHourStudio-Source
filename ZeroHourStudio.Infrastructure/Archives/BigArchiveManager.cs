@@ -9,7 +9,8 @@ namespace ZeroHourStudio.Infrastructure.Archives;
 /// </summary>
 public class BigArchiveManager : IDisposable
 {
-    private const uint BIG_FILE_SIGNATURE = 0x12FD0000; // توقيع ملف BIG
+    private const uint BIGF_SIGNATURE = 0x46474942; // "BIGF" as LE uint32
+    private const uint BIG4_SIGNATURE = 0x34474942; // "BIG4" as LE uint32
     private const string HIGH_PRIORITY_PREFIX = "!!";
 
     private readonly string _archivePath;
@@ -58,67 +59,87 @@ public class BigArchiveManager : IDisposable
     {
         using var accessor = _mmf!.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Read);
 
-        // قراءة التوقيع
+        // قراءة التوقيع - دعم BIGF و BIG4
         uint signature = accessor.ReadUInt32(0);
-        if (signature != BIG_FILE_SIGNATURE)
-            throw new InvalidOperationException("توقيع ملف BIG غير صحيح");
+        if (signature != BIGF_SIGNATURE && signature != BIG4_SIGNATURE)
+            throw new InvalidOperationException($"توقيع ملف BIG غير صحيح: 0x{signature:X8} (المتوقع BIGF أو BIG4)");
 
-        // قراءة عدد الملفات
-        uint fileCount = accessor.ReadUInt32(4);
-        uint dataSize = accessor.ReadUInt32(8);
+        // حقول العدد والحجم مخزنة بترتيب Big-Endian في صيغة BIG
+        // Bytes 4-7: حجم الأرشيف (LE)
+        // Bytes 8-11: عدد الملفات (BE)
+        // Bytes 12-15: حجم الفهرس (BE)
+        uint fileCount = ReadBigEndianUInt32(accessor, 8);
+        uint indexSize = ReadBigEndianUInt32(accessor, 12);
 
-        long position = 12;
+        long position = 16; // بعد الـ Header (16 بايت)
 
         for (uint i = 0; i < fileCount; i++)
         {
-            var entry = ReadFileEntry(accessor, position);
+            var (entry, bytesConsumed) = ReadFileEntry(accessor, position);
             if (entry != null)
             {
-                // نظام الأولوية: الملفات التي تبدأ بـ !! لها الأولوية
                 string key = entry.FileName;
-                if (!_fileIndex.ContainsKey(key) || entry.FileName.StartsWith(HIGH_PRIORITY_PREFIX))
+                if (!_fileIndex.ContainsKey(key) || entry.FileName.StartsWith(HIGH_PRIORITY_PREFIX, StringComparison.OrdinalIgnoreCase))
                 {
                     _fileIndex[key] = entry;
                 }
             }
 
-            position += 12 + (entry?.FileName.Length ?? 0) + 1;
+            if (bytesConsumed <= 0)
+                break;
+            position += bytesConsumed;
         }
+    }
+
+    /// <summary>
+    /// قراءة قيمة uint32 بترتيب Big-Endian
+    /// </summary>
+    private static uint ReadBigEndianUInt32(MemoryMappedViewAccessor accessor, long position)
+    {
+        byte b0 = accessor.ReadByte(position);
+        byte b1 = accessor.ReadByte(position + 1);
+        byte b2 = accessor.ReadByte(position + 2);
+        byte b3 = accessor.ReadByte(position + 3);
+        return (uint)((b0 << 24) | (b1 << 16) | (b2 << 8) | b3);
     }
 
     /// <summary>
     /// قراءة إدخال ملف واحد من الأرشيف
     /// </summary>
-    private static ArchiveEntry? ReadFileEntry(MemoryMappedViewAccessor accessor, long position)
+    /// <returns>(الإدخال، عدد البايتات المُستهلكة) - عند الفشل يُرجع (null, 0) للإيقاف</returns>
+    private static (ArchiveEntry? Entry, int BytesConsumed) ReadFileEntry(MemoryMappedViewAccessor accessor, long position)
     {
         try
         {
-            uint offset = accessor.ReadUInt32(position);
-            uint size = accessor.ReadUInt32(position + 4);
-            uint timestamp = accessor.ReadUInt32(position + 8);
+            // صيغة الإدخال في BIG: Offset (4 BE) + Size (4 BE) + Filename (null-terminated)
+            uint offset = ReadBigEndianUInt32(accessor, position);
+            uint size = ReadBigEndianUInt32(accessor, position + 4);
 
-            // قراءة اسم الملف (null-terminated string)
             var nameBuilder = new StringBuilder();
-            long namePos = position + 12;
+            long namePos = position + 8; // بعد offset (4) + size (4) = 8 بايت
             byte charByte;
+            int nameLen = 0;
+            const int maxNameLen = 512;
 
-            while ((charByte = accessor.ReadByte(namePos)) != 0)
+            while (nameLen < maxNameLen && (charByte = accessor.ReadByte(namePos)) != 0)
             {
                 nameBuilder.Append((char)charByte);
                 namePos++;
+                nameLen++;
             }
 
-            return new ArchiveEntry
+            var bytesConsumed = 8 + nameLen + 1; // 8 بايت للحقول + طول الاسم + null terminator
+            return (new ArchiveEntry
             {
                 FileName = nameBuilder.ToString(),
                 Offset = offset,
                 Size = size,
-                Timestamp = timestamp
-            };
+                Timestamp = 0
+            }, bytesConsumed);
         }
         catch
         {
-            return null;
+            return (null, 0);
         }
     }
 
@@ -129,7 +150,8 @@ public class BigArchiveManager : IDisposable
     {
         ThrowIfDisposed();
 
-        if (!_fileIndex.TryGetValue(fileName, out var entry))
+        var entry = FindEntry(fileName);
+        if (entry == null)
             throw new FileNotFoundException($"الملف غير موجود في الأرشيف: {fileName}");
 
         return await Task.Run(() =>
@@ -141,13 +163,29 @@ public class BigArchiveManager : IDisposable
         });
     }
 
+    private ArchiveEntry? FindEntry(string fileName)
+    {
+        // Try exact match
+        if (_fileIndex.TryGetValue(fileName, out var entry))
+            return entry;
+        // Normalize slashes and retry
+        var normalized = fileName.Replace('\\', '/');
+        if (_fileIndex.TryGetValue(normalized, out entry))
+            return entry;
+        // Try filename-only fallback
+        var nameOnly = Path.GetFileName(fileName);
+        if (_fileIndex.TryGetValue(nameOnly, out entry))
+            return entry;
+        return null;
+    }
+
     /// <summary>
     /// التحقق من وجود ملف في الأرشيف
     /// </summary>
     public bool FileExists(string fileName)
     {
         ThrowIfDisposed();
-        return _fileIndex.ContainsKey(fileName);
+        return FindEntry(fileName) != null;
     }
 
     /// <summary>
@@ -165,7 +203,7 @@ public class BigArchiveManager : IDisposable
     public ArchiveEntry? GetFileInfo(string fileName)
     {
         ThrowIfDisposed();
-        return _fileIndex.TryGetValue(fileName, out var entry) ? entry : null;
+        return FindEntry(fileName);
     }
 
     private void ThrowIfDisposed()
@@ -181,12 +219,15 @@ public class BigArchiveManager : IDisposable
 
         _mmf?.Dispose();
         _fileStream?.Dispose();
-        _fileIndex.Clear();
+        _fileIndex?.Clear();
         _disposed = true;
         GC.SuppressFinalize(this);
     }
 
-    ~BigArchiveManager() => Dispose();
+    ~BigArchiveManager()
+    {
+        try { Dispose(); } catch { }
+    }
 }
 
 /// <summary>

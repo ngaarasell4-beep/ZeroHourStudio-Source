@@ -1,4 +1,10 @@
 using System.Text.RegularExpressions;
+using ZeroHourStudio.Application.Interfaces;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.IO;
+using System;
+using System.Linq;
 
 namespace ZeroHourStudio.Infrastructure.Parsers;
 
@@ -8,7 +14,7 @@ namespace ZeroHourStudio.Infrastructure.Parsers;
 /// - يتجاهل التعليقات التي تبدأ بـ ;
 /// - يستخدم ReadOnlySpan<char> للأداء العالي
 /// </summary>
-public class SAGE_IniParser
+public class SAGE_IniParser : IIniParser
 {
     private readonly Dictionary<string, Dictionary<string, string>> _data;
     private readonly Dictionary<string, string> _fullObjects; // لتخزين كود الكائنات الكامل
@@ -133,69 +139,97 @@ public class SAGE_IniParser
     /// </summary>
     private void ParseKeyValue(ReadOnlySpan<char> line, string? currentSection)
     {
-        int equalsIndex = line.IndexOf('=');
-        if (equalsIndex <= 0)
-            return;
+        if (currentSection == null) return;
+
+        var equalsIndex = line.IndexOf('=');
+        if (equalsIndex == -1) return;
 
         var key = line.Slice(0, equalsIndex).Trim().ToString();
         var value = line.Slice(equalsIndex + 1).Trim().ToString();
 
-        // إزالة علامات الاقتباس إذا كانت موجودة
-        if (value.StartsWith("\"") && value.EndsWith("\""))
-        {
-            value = value.Substring(1, value.Length - 2);
-        }
-
-        if (!string.IsNullOrEmpty(currentSection))
-        {
-            _data[currentSection][key] = value;
-        }
+        _data[currentSection][key] = value;
     }
 
     /// <summary>
-    /// استخراج كود كائن كامل من اسمه التقني
+    /// الحصول على قيمة معينة من القسم والمفتاح
     /// </summary>
-    public string? ExtractObject(string technicalName)
+    public async Task<string?> GetValueAsync(string filePath, string section, string key)
     {
-        if (string.IsNullOrWhiteSpace(technicalName))
-            return null;
-
-        return _fullObjects.TryGetValue(technicalName, out var objectCode) ? objectCode : null;
-    }
-
-    /// <summary>
-    /// الحصول على قيمة محددة من القسم والمفتاح (غير حساس لحالة الأحرف)
-    /// </summary>
-    public string? GetValue(string section, string key)
-    {
-        if (_data.TryGetValue(section, out var sectionData))
+        var data = await ParseAsync(filePath);
+        if (data.TryGetValue(section, out var sectionData))
         {
-            return sectionData.TryGetValue(key, out var value) ? value : null;
+            return sectionData.GetValueOrDefault(key);
         }
-
         return null;
     }
 
     /// <summary>
     /// الحصول على جميع المفاتيح في قسم معين
     /// </summary>
-    public IEnumerable<string> GetKeys(string section)
+    public async Task<IEnumerable<string>> GetKeysAsync(string filePath, string section)
     {
-        return _data.TryGetValue(section, out var sectionData) ? sectionData.Keys : Enumerable.Empty<string>();
+        var data = await ParseAsync(filePath);
+        if (data.TryGetValue(section, out var sectionData))
+        {
+            return sectionData.Keys;
+        }
+        return Enumerable.Empty<string>();
     }
 
     /// <summary>
-    /// الحصول على جميع الأقسام
+    /// الحصول على جميع الأقسام في الملف
     /// </summary>
-    public IEnumerable<string> GetSections() => _data.Keys;
+    public async Task<IEnumerable<string>> GetSectionsAsync(string filePath)
+    {
+        var data = await ParseAsync(filePath);
+        return data.Keys;
+    }
 
     /// <summary>
-    /// الحصول على البيانات المحللة
+    /// الحصول على قيمة مباشرة (sync version)
     /// </summary>
-    public Dictionary<string, Dictionary<string, string>> GetParsedData() => _data;
+    public string GetValue(string section, string key)
+    {
+        if (_data.TryGetValue(section, out var sectionData))
+        {
+            return sectionData.GetValueOrDefault(key) ?? string.Empty;
+        }
+        return string.Empty;
+    }
 
     /// <summary>
-    /// الحصول على جميع الكائنات المستخرجة
+    /// الحصول على جميع المفاتيح (sync version)
     /// </summary>
-    public Dictionary<string, string> GetFullObjects() => _fullObjects;
+    public IEnumerable<string> GetKeys(string section)
+    {
+        if (_data.TryGetValue(section, out var sectionData))
+        {
+            return sectionData.Keys;
+        }
+        return Enumerable.Empty<string>();
+    }
+
+    /// <summary>
+    /// الحصول على جميع الأقسام (sync version)
+    /// </summary>
+    public IEnumerable<string> GetSections()
+    {
+        return _data.Keys;
+    }
+
+    /// <summary>
+    /// استخراج كائن كامل
+    /// </summary>
+    public string? ExtractObject(string objectName)
+    {
+        return _fullObjects.GetValueOrDefault(objectName);
+    }
+
+    /// <summary>
+    /// الحصول على جميع الكائنات الكاملة
+    /// </summary>
+    public Dictionary<string, string> GetFullObjects()
+    {
+        return new Dictionary<string, string>(_fullObjects);
+    }
 }

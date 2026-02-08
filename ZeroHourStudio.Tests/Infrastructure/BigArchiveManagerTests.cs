@@ -11,66 +11,56 @@ namespace ZeroHourStudio.Tests.Infrastructure
         [Fact]
         public void BigArchiveManager_Constructor_ShouldInitialize()
         {
-            // Arrange & Act
-            var manager = new BigArchiveManager();
+            // Arrange & Act - requires a path, use a temp file path
+            var tempPath = Path.GetTempFileName();
+            var manager = new BigArchiveManager(tempPath);
 
             // Assert
             manager.Should().NotBeNull();
+            manager.Dispose();
+            File.Delete(tempPath);
         }
 
         [Fact]
-        public void MountArchive_WithInvalidPath_ShouldThrowException()
+        public void Constructor_WithInvalidPath_ShouldThrowFileNotFoundException()
         {
             // Arrange
-            var manager = new BigArchiveManager();
-            var invalidPath = "C:\\NonExistent\\Path\\test.big";
+            var invalidPath = Path.Combine(Path.GetTempPath(), "NonExistent_" + Guid.NewGuid() + ".big");
 
             // Act
-            Action act = () => manager.MountArchive(invalidPath);
+            Action act = () => new BigArchiveManager(invalidPath);
 
             // Assert
             act.Should().Throw<FileNotFoundException>();
         }
 
         [Fact]
-        public void MountArchive_WithPriorityPrefix_ShouldHaveHigherPriority()
+        public void PriorityPrefix_ShouldBeDetectable()
         {
             // Arrange
-            var manager = new BigArchiveManager();
             var priorityArchive = "!!TestArchive.big";
             var normalArchive = "TestArchive.big";
 
             // Act & Assert
-            // الأرشيفات بالبادئة !! يجب أن تكون لها أولوية أعلى
             priorityArchive.StartsWith("!!").Should().BeTrue();
             normalArchive.StartsWith("!!").Should().BeFalse();
         }
 
         [Fact]
-        public void FileExists_WithNonMountedArchive_ShouldReturnFalse()
+        public void GetFileList_WithoutLoading_ShouldReturnEmpty()
         {
             // Arrange
-            var manager = new BigArchiveManager();
+            var tempPath = Path.GetTempFileName();
+            var manager = new BigArchiveManager(tempPath);
 
             // Act
-            var result = manager.FileExists("NonExistent.ini");
-
-            // Assert
-            result.Should().BeFalse();
-        }
-
-        [Fact]
-        public void ListAllFiles_WithNoMountedArchives_ShouldReturnEmptyList()
-        {
-            // Arrange
-            var manager = new BigArchiveManager();
-
-            // Act
-            var files = manager.ListAllFiles();
+            var files = manager.GetFileList();
 
             // Assert
             files.Should().NotBeNull();
             files.Should().BeEmpty();
+            manager.Dispose();
+            File.Delete(tempPath);
         }
 
         [Theory]
@@ -83,26 +73,24 @@ namespace ZeroHourStudio.Tests.Infrastructure
             var normalized = path.Replace('\\', '/').ToLowerInvariant();
 
             // Assert
-            normalized.Should().NotContain('\\');
+            normalized.Should().NotContain("\\");
             normalized.Should().Be(normalized.ToLowerInvariant());
         }
 
         [Fact]
-        public void ExtractFile_WithoutMountedArchive_ShouldThrowException()
+        public async Task ExtractFileAsync_WithoutLoading_ShouldThrowException()
         {
             // Arrange
-            var manager = new BigArchiveManager();
-            var outputPath = Path.GetTempFileName();
+            var tempPath = Path.GetTempFileName();
+            var manager = new BigArchiveManager(tempPath);
 
             // Act
-            Action act = () => manager.ExtractFile("test.ini", outputPath);
+            Func<Task> act = async () => await manager.ExtractFileAsync("test.ini");
 
             // Assert
-            act.Should().Throw<Exception>();
-
-            // Cleanup
-            if (File.Exists(outputPath))
-                File.Delete(outputPath);
+            await act.Should().ThrowAsync<Exception>();
+            manager.Dispose();
+            File.Delete(tempPath);
         }
     }
 }

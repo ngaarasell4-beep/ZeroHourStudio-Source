@@ -1,11 +1,11 @@
-d:\مجلد جديد (2)\ZeroHourStudio.Domain\bin\Release\net8.0\ZeroHourStudio.Domain.deps.json
-d:\مجلد جديد (2)\ZeroHourStudio.Domain\bin\Release\net8.0\ZeroHourStudio.Domain.dll
-d:\مجلد جديد (2)\ZeroHourStudio.Domain\bin\Release\net8.0\ZeroHourStudio.Domain.pdb
-d:\مجلد جديد (2)\ZeroHourStudio.Domain\obj\Release\net8.0\ZeroHourStudio.Domain.GeneratedMSBuildEditorConfig.editorconfig
-d:\مجلد جديد (2)\ZeroHourStudio.Domain\obj\Release\net8.0\ZeroHourStudio.Domain.AssemblyInfoInputs.cache
-d:\مجلد جديد (2)\ZeroHourStudio.Domain\obj\Release\net8.0\ZeroHourStudio.Domain.AssemblyInfo.cs
-d:\مجلد جديد (2)\ZeroHourStudio.Domain\obj\Release\net8.0\ZeroHourStudio.Domain.csproj.CoreCompileInputs.cache
-d:\مجلد جديد (2)\ZeroHourStudio.Domain\obj\Release\net8.0\ZeroHourStudio.Domain.dll
-d:\مجلد جديد (2)\ZeroHourStudio.Domain\obj\Release\net8.0\refint\ZeroHourStudio.Domain.dll
-d:\مجلد جديد (2)\ZeroHourStudio.Domain\obj\Release\net8.0\ZeroHourStudio.Domain.pdb
-d:\مجلد جديد (2)\ZeroHourStudio.Domain\obj\Release\net8.0\ref\ZeroHourStudio.Domain.dll
+D:\ZeroHourStudio\ZeroHourStudio.Domain\bin\Release\net8.0\ZeroHourStudio.Domain.deps.json
+D:\ZeroHourStudio\ZeroHourStudio.Domain\bin\Release\net8.0\ZeroHourStudio.Domain.dll
+D:\ZeroHourStudio\ZeroHourStudio.Domain\bin\Release\net8.0\ZeroHourStudio.Domain.pdb
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Release\net8.0\ZeroHourStudio.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Release\net8.0\ZeroHourStudio.Domain.AssemblyInfoInputs.cache
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Release\net8.0\ZeroHourStudio.Domain.AssemblyInfo.cs
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Release\net8.0\ZeroHourStudio.Domain.csproj.CoreCompileInputs.cache
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Release\net8.0\ZeroHourStudio.Domain.dll
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Release\net8.0\refint\ZeroHourStudio.Domain.dll
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Release\net8.0\ZeroHourStudio.Domain.pdb
+D:\ZeroHourStudio\ZeroHourStudio.Domain\obj\Release\net8.0\ref\ZeroHourStudio.Domain.dll

@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "net8._0_windows": {
-      "commandName": "Project",
-      "commandLineArgs": "--port 7154",
-      "launchBrowser": false
-    }
-  }
-}

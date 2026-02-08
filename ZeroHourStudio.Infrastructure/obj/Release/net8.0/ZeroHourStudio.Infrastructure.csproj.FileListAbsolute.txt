@@ -1,17 +1,17 @@
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Infrastructure.deps.json
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Infrastructure.dll
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Infrastructure.pdb
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Application.dll
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Domain.dll
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Domain.pdb
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Application.pdb
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.csproj.AssemblyReference.cache
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.AssemblyInfoInputs.cache
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.AssemblyInfo.cs
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.csproj.CoreCompileInputs.cache
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHour.ED20D227.Up2Date
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.dll
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\obj\Release\net8.0\refint\ZeroHourStudio.Infrastructure.dll
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.pdb
-d:\مجلد جديد (2)\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ref\ZeroHourStudio.Infrastructure.dll
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Infrastructure.deps.json
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Infrastructure.dll
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Infrastructure.pdb
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Application.dll
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Domain.dll
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Domain.pdb
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\bin\Release\net8.0\ZeroHourStudio.Application.pdb
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.csproj.AssemblyReference.cache
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.AssemblyInfoInputs.cache
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.AssemblyInfo.cs
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.csproj.CoreCompileInputs.cache
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHour.ED20D227.Up2Date
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.dll
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Release\net8.0\refint\ZeroHourStudio.Infrastructure.dll
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ZeroHourStudio.Infrastructure.pdb
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Release\net8.0\ref\ZeroHourStudio.Infrastructure.dll

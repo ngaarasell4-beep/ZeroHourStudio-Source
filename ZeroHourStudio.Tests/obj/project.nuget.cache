@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "nsECEx7Vah8=",
+  "dgSpecHash": "EcBq39rGxRc=",
   "success": true,
-  "projectFilePath": "D:\\مجلد جديد (2)\\ZeroHourStudio.Tests\\ZeroHourStudio.Tests.csproj",
+  "projectFilePath": "D:\\ZeroHourStudio\\ZeroHourStudio.Tests\\ZeroHourStudio.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ngaar\\.nuget\\packages\\castle.core\\5.1.1\\castle.core.5.1.1.nupkg.sha512",
     "C:\\Users\\ngaar\\.nuget\\packages\\coverlet.collector\\6.0.0\\coverlet.collector.6.0.0.nupkg.sha512",

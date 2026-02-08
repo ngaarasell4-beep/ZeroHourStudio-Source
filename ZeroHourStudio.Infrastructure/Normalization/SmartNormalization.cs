@@ -13,6 +13,7 @@ public class SmartNormalization
     // قائمة الفصائل المكتشفة في اللعبة
     private readonly List<KnownFaction> _knownFactions;
     private const int FuzzyMatchThreshold = 70; // نسبة التطابق المقبولة (%)
+    private const double JaroWinklerThreshold = 0.85;
 
     public SmartNormalization()
     {
@@ -91,25 +92,40 @@ public class SmartNormalization
         var normalizedInput = input.Trim().ToLowerInvariant();
         KnownFaction? bestMatch = null;
         int bestScore = 0;
+        double bestJaroWinkler = 0.0;
 
         foreach (var faction in _knownFactions)
         {
             // حساب المسافة مع الاسم المطبّع
-            int score = CalculateSimilarity(normalizedInput, faction.NormalizedName.ToLowerInvariant());
-            if (score > bestScore && score >= FuzzyMatchThreshold)
+            var normalizedName = faction.NormalizedName.ToLowerInvariant();
+            int score = CalculateSimilarity(normalizedInput, normalizedName);
+            double jwScore = JaroWinkler(normalizedInput, normalizedName);
+
+            if ((score > bestScore && score >= FuzzyMatchThreshold) || jwScore >= JaroWinklerThreshold)
             {
-                bestScore = score;
-                bestMatch = faction;
+                if (jwScore > bestJaroWinkler || score > bestScore)
+                {
+                    bestScore = score;
+                    bestJaroWinkler = jwScore;
+                    bestMatch = faction;
+                }
             }
 
             // حساب المسافة مع الأنماط المعروفة
             foreach (var alias in faction.Aliases)
             {
-                score = CalculateSimilarity(normalizedInput, alias.ToLowerInvariant());
-                if (score > bestScore && score >= FuzzyMatchThreshold)
+                var normalizedAlias = alias.ToLowerInvariant();
+                score = CalculateSimilarity(normalizedInput, normalizedAlias);
+                jwScore = JaroWinkler(normalizedInput, normalizedAlias);
+
+                if ((score > bestScore && score >= FuzzyMatchThreshold) || jwScore >= JaroWinklerThreshold)
                 {
-                    bestScore = score;
-                    bestMatch = faction;
+                    if (jwScore > bestJaroWinkler || score > bestScore)
+                    {
+                        bestScore = score;
+                        bestJaroWinkler = jwScore;
+                        bestMatch = faction;
+                    }
                 }
             }
         }
@@ -160,6 +176,75 @@ public class SmartNormalization
         }
 
         return matrix[source.Length, target.Length];
+    }
+
+    /// <summary>
+    /// حساب تشابه Jaro-Winkler بين نصين
+    /// </summary>
+    private static double JaroWinkler(string source, string target)
+    {
+        if (string.IsNullOrEmpty(source))
+            return string.IsNullOrEmpty(target) ? 1.0 : 0.0;
+        if (string.IsNullOrEmpty(target))
+            return 0.0;
+
+        int matchDistance = Math.Max(source.Length, target.Length) / 2 - 1;
+        if (matchDistance < 0) matchDistance = 0;
+
+        var sourceMatches = new bool[source.Length];
+        var targetMatches = new bool[target.Length];
+
+        int matches = 0;
+        for (int i = 0; i < source.Length; i++)
+        {
+            int start = Math.Max(0, i - matchDistance);
+            int end = Math.Min(i + matchDistance + 1, target.Length);
+
+            for (int j = start; j < end; j++)
+            {
+                if (targetMatches[j])
+                    continue;
+                if (source[i] != target[j])
+                    continue;
+
+                sourceMatches[i] = true;
+                targetMatches[j] = true;
+                matches++;
+                break;
+            }
+        }
+
+        if (matches == 0)
+            return 0.0;
+
+        double transpositions = 0;
+        int k = 0;
+        for (int i = 0; i < source.Length; i++)
+        {
+            if (!sourceMatches[i])
+                continue;
+            while (!targetMatches[k])
+                k++;
+            if (source[i] != target[k])
+                transpositions++;
+            k++;
+        }
+
+        transpositions /= 2.0;
+
+        double m = matches;
+        double jaro = (m / source.Length + m / target.Length + (m - transpositions) / m) / 3.0;
+
+        int prefix = 0;
+        for (int i = 0; i < Math.Min(4, Math.Min(source.Length, target.Length)); i++)
+        {
+            if (source[i] == target[i])
+                prefix++;
+            else
+                break;
+        }
+
+        return jaro + prefix * 0.1 * (1 - jaro);
     }
 
     /// <summary>

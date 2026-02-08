@@ -1,0 +1,573 @@
+===================================================================================
+📋 WINDSURF AI - مشروع ZeroHourStudio - دليل شامل للتطوير
+===================================================================================
+
+🎯 CONTEXT (السياق):
+-------------------
+أنا أعمل على مشروع WPF بلغة C# اسمه "ZeroHourStudio" - أداة لاستخراج ونقل الوحدات والأسلحة بين مودات لعبة Command & Conquer: Generals Zero Hour.
+
+المشروع يستخدم:
+- .NET 8.0
+- WPF (Windows Presentation Foundation)
+- Clean Architecture (Domain, Application, Infrastructure, UI)
+- MVVM Pattern
+
+===================================================================================
+📁 هيكل المشروع الحالي:
+===================================================================================
+
+D:\ZeroHourStudio\ZeroHourStudio.UI.WPF\ZeroHourStudio\
+│
+├── ZeroHourStudio.Domain/
+│   ├── Entities/
+│   │   ├── SageUnit.cs
+│   │   ├── SageFaction.cs
+│   │   └── DependencyNode.cs
+│   └── ValueObjects/
+│       └── FactionName.cs
+│
+├── ZeroHourStudio.Application/
+│   ├── Interfaces/
+│   │   ├── IBigFileReader.cs
+│   │   ├── IIniParser.cs
+│   │   └── IDependencyServices.cs
+│   ├── Models/
+│   │   ├── UnitDependencyGraph.cs
+│   │   └── ValidationResult.cs
+│   └── UseCases/
+│       ├── AnalyzeDependenciesUseCase.cs
+│       ├── TransferUnitUseCase.cs
+│       └── ValidateUnitCompletionUseCase.cs
+│
+├── ZeroHourStudio.Infrastructure/
+│   ├── Implementations/
+│   │   ├── ModBigFileReader.cs          ⚠️ مشكلة: يُهيئ بمسار فارغ
+│   │   ├── BigFileReader.cs
+│   │   └── NullBigFileReader.cs
+│   ├── Services/
+│   │   ├── UnitDiscoveryService.cs      ⚠️ مشكلة: معايير اكتشاف ضيقة
+│   │   ├── CommandSetPatchService.cs
+│   │   └── ComprehensiveDependencyService.cs
+│   ├── Parsers/
+│   │   └── SAGE_IniParser.cs
+│   ├── Normalization/
+│   │   ├── SmartNormalization.cs
+│   │   └── FactionNameNormalizer.cs
+│   ├── DependencyResolution/
+│   │   ├── SmartDependencyResolver.cs
+│   │   └── IDependencyResolver.cs
+│   ├── Transfer/
+│   │   ├── SmartTransferService.cs
+│   │   └── ISmartTransferService.cs
+│   ├── Archives/
+│   │   └── BigArchiveManager.cs
+│   └── Logging/
+│       └── SimpleLogger.cs
+│
+└── ZeroHourStudio.UI.WPF/
+    ├── ViewModels/
+    │   └── MainViewModel.cs             🔴 المشكلة الرئيسية هنا
+    ├── Views/
+    │   └── MainWindow.xaml
+    ├── Commands/
+    │   └── RelayCommand.cs
+    └── Core/
+        └── ViewModelBase.cs
+
+===================================================================================
+🔴 المشاكل الحرجة المكتشفة:
+===================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ PROBLEM #1: ModBigFileReader initialization with empty path                │
+│ الخطورة: 🔴 CRITICAL                                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+📍 الملف: MainViewModel.cs (السطر ~40)
+
+❌ الكود الحالي (خاطئ):
+```csharp
+public MainViewModel()
+{
+    // ...
+    _bigFileReader = new ModBigFileReader(string.Empty); // ❌ مسار فارغ!
+    _transferUseCase = new TransferUnitUseCase(_bigFileReader);
+    _dependencyResolver = new SmartDependencyResolver(_bigFileReader);
+}
+```
+
+🔍 التحليل:
+1. ModBigFileReader يُنشأ بمسار فارغ في Constructor
+2. عند استدعاء EnsureIndexAsync()، يتحقق من المسار:
+   - إذا كان فارغاً، يُحدد _indexed = true بدون فهرسة فعلية
+   - النتيجة: _index يبقى فارغاً
+3. عند الاستخراج: FileExistsAsync() يرجع false دائماً
+4. عند النقل: ExtractAsync() يرمي FileNotFoundException
+
+✅ الحل المطلوب:
+```csharp
+public MainViewModel()
+{
+    // ...
+    // ✅ لا تُنشئ BigFileReader هنا
+    _bigFileReader = null!; // سيتم التهيئة في LoadModAsync
+}
+
+public async Task LoadModAsync()
+{
+    if (!HasSourcePath) return;
+    
+    // ✅ أنشئ BigFileReader بالمسار الصحيح
+    _bigFileReader = new ModBigFileReader(SourceModPath);
+    
+    // ✅ حدّث المراجع
+    _transferUseCase = new TransferUnitUseCase(_bigFileReader);
+    _dependencyResolver = new SmartDependencyResolver(_bigFileReader);
+    
+    // ✅ تحقق من الفهرسة
+    await _bigFileReader.ReadAsync("");
+    
+    // باقي الكود...
+}
+```
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ PROBLEM #2: BigFileReader path not updated before operations               │
+│ الخطورة: 🟡 HIGH                                                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+📍 الملف: MainViewModel.cs - TransferUnitAsync()
+
+❌ الكود الحالي:
+```csharp
+private async Task TransferUnitAsync()
+{
+    // ❌ لا يُحدث BigFileReader قبل الحل
+    var resolvedGraph = await _dependencyResolver.ResolveDependenciesAsync(
+        SelectedUnit.TechnicalName,
+        SourceModPath);
+}
+```
+
+✅ الحل:
+```csharp
+private async Task TransferUnitAsync()
+{
+    // ✅ تحديث المسار قبل أي عملية
+    _bigFileReader.SetRootPath(SourceModPath);
+    await _bigFileReader.ReadAsync("");
+    
+    var resolvedGraph = await _dependencyResolver.ResolveDependenciesAsync(
+        SelectedUnit.TechnicalName,
+        SourceModPath);
+}
+```
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ PROBLEM #3: Unit discovery criteria too narrow                             │
+│ الخطورة: 🟡 MEDIUM                                                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+📍 الملف: UnitDiscoveryService.cs - IsSelectableUnit()
+
+❌ الكود الحالي:
+```csharp
+private static bool IsSelectableUnit(Dictionary<string, string> data)
+{
+    if (data.TryGetValue("KindOf", out var kindOf) &&
+        kindOf.IndexOf("SELECTABLE", StringComparison.OrdinalIgnoreCase) >= 0)
+        return true;
+
+    if (data.ContainsKey("CommandSet"))
+        return true;
+
+    return false; // ❌ يتجاهل وحدات أخرى قابلة للتحديد
+}
+```
+
+✅ الحل:
+```csharp
+private static bool IsSelectableUnit(Dictionary<string, string> data)
+{
+    // 1. KindOf SELECTABLE
+    if (data.TryGetValue("KindOf", out var kindOf) &&
+        kindOf.IndexOf("SELECTABLE", StringComparison.OrdinalIgnoreCase) >= 0)
+        return true;
+
+    // 2. CommandSet
+    if (data.ContainsKey("CommandSet"))
+        return true;
+    
+    // ✅ 3. Side (فصيل)
+    if (data.TryGetValue("Side", out var side) && !string.IsNullOrWhiteSpace(side))
+        return true;
+    
+    // ✅ 4. BuildCost
+    if (data.TryGetValue("BuildCost", out var cost) && 
+        int.TryParse(cost, out var costValue) && 
+        costValue > 0)
+        return true;
+    
+    // ✅ 5. WeaponSet
+    if (data.ContainsKey("WeaponSet") || data.ContainsKey("Weapon"))
+        return true;
+
+    // ✅ 6. Model
+    if (data.ContainsKey("Model") || data.ContainsKey("ModelName"))
+        return true;
+
+    return false;
+}
+```
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ PROBLEM #4: Missing logging for debugging                                  │
+│ الخطورة: 🟢 LOW                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+✅ الحل: إضافة SimpleLogger في العمليات الحرجة:
+```csharp
+private readonly SimpleLogger _logger;
+
+public MainViewModel()
+{
+    _logger = new SimpleLogger("ZeroHourStudio.log");
+}
+
+public async Task LoadModAsync()
+{
+    await _logger.LogAsync($"[INFO] بدء تحميل المود من: {SourceModPath}");
+    
+    try
+    {
+        // العمليات...
+        await _logger.LogAsync($"[SUCCESS] تم اكتشاف {Units.Count} وحدة");
+    }
+    catch (Exception ex)
+    {
+        await _logger.LogAsync($"[ERROR] فشل التحميل: {ex.Message}");
+        await _logger.LogAsync($"[STACK] {ex.StackTrace}");
+    }
+}
+```
+
+===================================================================================
+📊 بنية لعبة C&C Generals Zero Hour (SAGE Engine):
+===================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ الملفات الأساسية:                                                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+1. ملفات INI (التعريفات):
+   - Object.ini → تعريفات الوحدات
+   - Weapon.ini → تعريفات الأسلحة
+   - Projectile.ini → تعريفات المقذوفات
+   - FXList.ini → التأثيرات البصرية
+   - ParticleSystem.ini → أنظمة الجزيئات
+   - CommandSet.ini → مجموعات الأوامر
+   - CommandButton.ini → أزرار الأوامر
+   - PlayerTemplate.ini → الفصائل
+
+2. ملفات W3D (النماذج 3D):
+   - *.W3D → النموذج الأساسي
+   - *_A.W3D → الحركات (Animations)
+   - *_SKN.W3D → النموذج المُقسّم (Skeleton)
+
+3. ملفات DDS/TGA (الخامات):
+   - *.DDS → الخريطة الأساسية
+   - *_N.DDS → Normal Map
+   - *_S.DDS → Specular Map
+
+4. ملفات WAV (الأصوات):
+   - *.WAV → الأصوات
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ شجرة التبعيات (Dependency Tree):                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Unit (AmericaVehicleCrusader)
+│
+├── Object.ini
+│   ├── Model → AVCrusader.W3D
+│   │   └── Texture → AVCrusader.DDS
+│   │
+│   ├── WeaponSet
+│   │   └── Weapon → CrusaderTankGun (Weapon.ini)
+│   │       ├── ProjectileObject → CrusaderShell (Projectile.ini)
+│   │       │   ├── Model → PShell.W3D
+│   │       │   └── ProjectileTrail → SmokeTrail (ParticleSystem.ini)
+│   │       │       └── ParticleTexture → SmokeTrail.TGA
+│   │       │
+│   │       ├── FireFX → FX_TankMuzzle (FXList.ini)
+│   │       │   ├── ParticleSystem → MuzzleFlash
+│   │       │   └── Sound → TankGunSound.WAV
+│   │       │
+│   │       └── ProjectileDetonationFX → FX_ShellExplosion (FXList.ini)
+│   │           ├── ParticleSystem → ExplosionSmoke, ExplosionFire
+│   │           └── Sound → ExplosionSound.WAV
+│   │
+│   ├── CommandSet → AmericaTankCommandSet (CommandSet.ini)
+│   │   └── Command_UpgradeTOW → CommandButton.ini
+│   │       └── Object → Upgrade_AmericaTOW (Upgrade.ini)
+│   │
+│   └── VoiceSelect → SoundEffects.ini
+│       └── CrusaderSelect.WAV
+│
+└── في PlayerTemplate.ini (الفصيل)
+    └── BuildableObjects
+        └── AmericaVehicleCrusader
+
+===================================================================================
+🎯 المهام المطلوبة من Windsurf AI:
+===================================================================================
+
+PRIORITY 1 - CRITICAL FIXES:
+──────────────────────────────
+
+[ ] TASK 1.1: إصلاح MainViewModel.cs
+    - إزالة تهيئة ModBigFileReader في Constructor
+    - نقل التهيئة إلى LoadModAsync()
+    - إعادة إنشاء UseCases بعد تهيئة BigFileReader
+    الملف: ZeroHourStudio.UI.WPF/ViewModels/MainViewModel.cs
+
+[ ] TASK 1.2: إضافة تحديث BigFileReader قبل العمليات
+    - في TransferUnitAsync(): أضف SetRootPath + ReadAsync قبل الحل
+    - في AnalyzeSelectedUnitAsync(): أضف SetRootPath + ReadAsync
+    الملف: ZeroHourStudio.UI.WPF/ViewModels/MainViewModel.cs
+
+[ ] TASK 1.3: توسيع معايير اكتشاف الوحدات
+    - تعديل IsSelectableUnit() لتشمل: Side, BuildCost, WeaponSet, Model
+    الملف: ZeroHourStudio.Infrastructure/Services/UnitDiscoveryService.cs
+
+PRIORITY 2 - ENHANCEMENTS:
+──────────────────────────
+
+[ ] TASK 2.1: إضافة Logging شامل
+    - في MainViewModel: إضافة SimpleLogger
+    - في LoadModAsync: تسجيل البدء، النجاح، الأخطاء
+    - في TransferUnitAsync: تسجيل كل خطوة
+    الملف: ZeroHourStudio.UI.WPF/ViewModels/MainViewModel.cs
+
+[ ] TASK 2.2: تحسين معالجة الأخطاء
+    - إضافة try-catch شامل في كل عملية async
+    - عرض رسائل خطأ واضحة للمستخدم
+    الملفات: جميع ملفات ViewModels و Services
+
+[ ] TASK 2.3: إضافة Unit Tests
+    - اختبار ModBigFileReader مع مسارات مختلفة
+    - اختبار UnitDiscoveryService مع ملفات INI متنوعة
+    - اختبار SmartDependencyResolver
+    المجلد: ZeroHourStudio.Tests/
+
+PRIORITY 3 - FEATURES:
+──────────────────────
+
+[ ] TASK 3.1: تحسين UI
+    - إضافة Progress Bar حقيقي مع نسبة مئوية
+    - عرض شجرة التبعيات Graphically
+    - إضافة Preview للملفات قبل النقل
+
+[ ] TASK 3.2: إضافة Cache
+    - حفظ فهرس BIG في ملف JSON
+    - تسريع عمليات الفهرسة اللاحقة
+    الملف: ZeroHourStudio.Infrastructure/Implementations/ModBigFileReader.cs
+
+[ ] TASK 3.3: تقارير مفصلة
+    - تصدير قائمة الملفات المنقولة إلى TXT/CSV
+    - سجل الأخطاء والتحذيرات في ملف Log
+
+===================================================================================
+📝 أمثلة كود للمرجع:
+===================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ مثال: Object.ini (تعريف وحدة)                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Object AmericaVehicleCrusader
+  Side            = America
+  DisplayName     = OBJECT:Crusader
+  Model           = AVCrusader
+  
+  WeaponSet
+    Weapon = PRIMARY   CrusaderTankGun
+    Weapon = SECONDARY CrusaderMachineGun
+  End
+  
+  ArmorSet
+    Armor = TankArmor
+  End
+  
+  Body = ActiveBody ModuleTag_Body
+    MaxHealth = 400.0
+  End
+  
+  CommandSet = AmericaTankCommandSet
+  BuildCost  = 900
+  
+  Prerequisites
+    Object  = AmericaWarFactory
+    Science = SCIENCE_America
+  End
+End
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ مثال: Weapon.ini (تعريف سلاح)                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Weapon CrusaderTankGun
+  AttackRange           = 150.0
+  ProjectileObject      = CrusaderTankShell
+  ProjectileDetonationFX = FX_TankShellDetonation
+  FireFX                = FX_MuzzleFlash_Tank
+  FireSound             = TankGunFire
+  PrimaryDamage         = 75.0
+  PrimaryDamageRadius   = 10.0
+  DamageType            = EXPLOSION
+  DelayBetweenShots     = 3000
+End
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ مثال: FXList.ini (تأثيرات بصرية)                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+FXList FX_TankShellDetonation
+  ParticleSystem
+    Name   = ExplosionSmoke
+    Count  = 5
+    Offset = X:0 Y:0 Z:10
+  End
+  
+  ParticleSystem
+    Name   = ExplosionFire
+    Count  = 3
+  End
+  
+  Sound
+    Name = ExplosionSound01
+  End
+  
+  LightPulse
+    Color    = R:255 G:200 B:100
+    Radius   = 50.0
+    Duration = 500
+  End
+End
+
+===================================================================================
+🧪 اختبارات مطلوبة:
+===================================================================================
+
+TEST CASE #1: تحميل مود بأرشيفات BIG
+──────────────────────────────────────
+Input:  SourceModPath = "D:\Mods\TestMod"
+Expected: 
+  - اكتشاف 100+ وحدات
+  - StatusMessage لا يحتوي على "خطأ"
+  - Units.Count > 0
+
+TEST CASE #2: نقل وحدة مع تبعيات
+──────────────────────────────────
+Input:  Unit = "AmericaTankCrusader", Source = "D:\Mods\Source", Target = "D:\Mods\Target"
+Expected:
+  - CurrentGraph.FoundCount > 0
+  - CurrentGraph.MissingCount == 0
+  - الملفات موجودة في Target/Data/
+
+TEST CASE #3: معالجة مسار فارغ
+────────────────────────────────
+Input:  SourceModPath = ""
+Expected:
+  - StatusMessage = "الرجاء اختيار مسار المود المصدر أولاً"
+  - لا يحدث Crash
+
+===================================================================================
+📌 ملاحظات مهمة:
+===================================================================================
+
+1. الكود يستخدم Encoding.GetEncoding(1252) لقراءة ملفات INI (Windows-1252)
+
+2. BigArchiveManager يدعم قراءة ملفات BIG المضغوطة وغير المضغوطة
+
+3. SmartDependencyResolver يستخدم Regex للبحث عن التبعيات في INI
+
+4. الأولوية العالية للملفات التي تبدأ بـ "!!" في الأرشيفات
+
+5. IsArchiveReference(path): يتحقق من وجود "::" في المسار
+   مثال: "W3DZH.big::Data/INI/Object/Tank.ini"
+
+6. TransferProgress يتتبع: CurrentFileIndex, TotalFiles, TransferredBytes
+
+7. UnitDependencyGraph يحتوي على:
+   - RootNode (العقدة الجذر)
+   - AllNodes (جميع التبعيات)
+   - FoundCount / MissingCount
+   - Status (Complete, Partial, Incomplete)
+
+===================================================================================
+🔧 بيئة التطوير:
+===================================================================================
+
+IDE: Visual Studio 2022
+Framework: .NET 8.0
+Language: C# 12
+UI Framework: WPF
+Architecture: Clean Architecture + MVVM
+Testing: xUnit (مطلوب)
+Logging: SimpleLogger (مخصص)
+
+===================================================================================
+🎯 الهدف النهائي:
+===================================================================================
+
+برنامج WPF احترافي يتيح للمستخدم:
+
+1. ✅ اختيار مود المصدر (Source Mod)
+2. ✅ اكتشاف جميع الوحدات تلقائياً (100% اكتمال)
+3. ✅ اختيار وحدة معينة
+4. ✅ تحليل جميع تبعياتها (Weapons, Models, Textures, Sounds, FX, etc.)
+5. ✅ اختيار مود الهدف (Target Mod)
+6. ✅ نقل الوحدة + جميع التبعيات بضغطة زر واحدة
+7. ✅ إنشاء CommandSet و Buttons تلقائياً
+8. ✅ دعم الفصائل (America, China, GLA, Custom Factions)
+9. ✅ التحقق من الاكتمال (Validation)
+10. ✅ عرض تقرير مفصل بالنتائج
+
+===================================================================================
+📞 معلومات الاتصال والدعم:
+===================================================================================
+
+إذا احتجت لتوضيحات إضافية، يرجى السؤال عن:
+- بنية ملف INI معين (Object, Weapon, FX, etc.)
+- كيفية عمل SmartDependencyResolver
+- خوارزمية استخراج التبعيات
+- معالجة الأخطاء في عمليات async
+- أي جزء من الكود غير واضح
+
+===================================================================================
+✅ CHECKLIST قبل البدء:
+===================================================================================
+
+قبل البدء في التطوير، تأكد من:
+
+[ ] قراءة كامل الملف وفهم البنية
+[ ] فهم المشاكل الأربعة الرئيسية
+[ ] معرفة أولويات المهام (Priority 1 أولاً)
+[ ] فهم بنية SAGE Engine و INI Files
+[ ] معرفة شجرة التبعيات (Dependency Tree)
+[ ] الاطلاع على الأمثلة
+[ ] فهم الهدف النهائي للبرنامج
+
+===================================================================================
+🚀 ابدأ الآن!
+===================================================================================
+
+أولوية البدء:
+1. إصلاح MainViewModel.cs (المشكلة #1 و #2)
+2. إصلاح UnitDiscoveryService.cs (المشكلة #3)
+3. إضافة Logging (المشكلة #4)
+4. كتابة Unit Tests
+5. التحسينات والميزات الإضافية
+
+حظاً موفقاً! 🎉

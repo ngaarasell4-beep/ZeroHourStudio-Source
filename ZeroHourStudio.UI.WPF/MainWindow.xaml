@@ -5,16 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ZeroHourStudio.UI.WPF"
         xmlns:viewmodels="clr-namespace:ZeroHourStudio.UI.WPF.ViewModels"
+        xmlns:conv="clr-namespace:ZeroHourStudio.UI.WPF.Converters"
         mc:Ignorable="d"
-        Title="ZeroHour Studio V2 - مدير نقل الوحدات" 
-        Height="700" 
-        Width="1000"
+        Title="ZeroHour Studio V2" 
+        Height="750" Width="1100"
         Background="#1E1E1E"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
-        <!-- Converter للتبعات (تبسيط للعرض) -->
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+        <conv:ButtonImageToIconConverter x:Key="IconConverter"/>
     </Window.Resources>
 
     <Grid>
@@ -26,25 +26,19 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Border Grid.Row="0" Background="#2D2D2D" Padding="20" BorderThickness="0,0,0,1" BorderBrush="#3F3F3F">
+        <Border Grid.Row="0" Background="#2D2D2D" Padding="15" BorderThickness="0,0,0,1" BorderBrush="#3F3F3F">
             <Grid>
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Text="مدير نقل الوحدات - Zero Hour V2" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,5"/>
-                    <TextBlock Text="تأسيس الهيكل والنمذجة الذكية" FontSize="14" Foreground="#AAAAAA"/>
-                </StackPanel>
-                
+                <TextBlock Text="Zero Hour Studio V2" FontSize="20" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <TextBox Width="250" Height="35" VerticalContentAlignment="Center" Padding="10,0" 
-                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                             Background="#333333" Foreground="White" BorderBrush="#444444" Margin="0,0,10,0"/>
-                    <Button Content="تطبيع البحث" Padding="15,5" Background="#0078D4" Foreground="White" 
-                            Command="{Binding SearchCommand}"/>
+                    <TextBox Width="250" Height="30" VerticalContentAlignment="Center" Padding="8,0"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Background="#333333" Foreground="White" BorderBrush="#444444"/>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Path Selection Row -->
-        <Border Grid.Row="1" Background="#252525" Padding="15,10" Margin="0" BorderThickness="0,0,0,1" BorderBrush="#3F3F3F">
+        <!-- Paths -->
+        <Border Grid.Row="1" Background="#252525" Padding="12,8" BorderThickness="0,0,0,1" BorderBrush="#3F3F3F">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -56,132 +50,186 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Source Mod Path -->
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="مسار المود المصدر:" Foreground="#AAAAAA" 
-                           VerticalAlignment="Center" Margin="0,0,10,0" FontSize="13"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Height="32" VerticalContentAlignment="Center" Padding="10,0"
-                         Text="{Binding SourceModPath, Mode=TwoWay}" 
-                         Background="#333333" Foreground="White" BorderBrush="#444444" 
-                         IsReadOnly="True" Margin="0,0,10,5"/>
-                <Button Grid.Row="0" Grid.Column="2" Content="استعراض..." Padding="20,5" Height="32"
-                        Background="#0078D4" Foreground="White" Margin="0,0,0,5"
-                        Click="BrowseSourcePath_Click"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="المصدر:" Foreground="#AAAAAA" VerticalAlignment="Center" Margin="0,0,8,4" FontSize="12"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Height="28" VerticalContentAlignment="Center" Padding="8,0"
+                         Text="{Binding SourceModPath, Mode=TwoWay}" Background="#333333" Foreground="White" BorderBrush="#444444" IsReadOnly="True" Margin="0,0,8,4"/>
+                <Button Grid.Row="0" Grid.Column="2" Content="استعراض" Padding="15,3" Height="28" Background="#0078D4" Foreground="White" Margin="0,0,0,4" Click="BrowseSourcePath_Click"/>
 
-                <!-- Target Mod Path -->
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="مسار المود الهدف:" Foreground="#AAAAAA" 
-                           VerticalAlignment="Center" Margin="0,0,10,0" FontSize="13"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Height="32" VerticalContentAlignment="Center" Padding="10,0"
-                         Text="{Binding TargetModPath, Mode=TwoWay}" 
-                         Background="#333333" Foreground="White" BorderBrush="#444444" 
-                         IsReadOnly="True" Margin="0,0,10,0"/>
-                <Button Grid.Row="1" Grid.Column="2" Content="استعراض..." Padding="20,5" Height="32"
-                        Background="#0078D4" Foreground="White"
-                        Click="BrowseTargetPath_Click"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="الهدف:" Foreground="#AAAAAA" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="12"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Height="28" VerticalContentAlignment="Center" Padding="8,0"
+                         Text="{Binding TargetModPath, Mode=TwoWay}" Background="#333333" Foreground="White" BorderBrush="#444444" IsReadOnly="True" Margin="0,0,8,0"/>
+                <Button Grid.Row="1" Grid.Column="2" Content="استعراض" Padding="15,3" Height="28" Background="#0078D4" Foreground="White" Click="BrowseTargetPath_Click"/>
             </Grid>
         </Border>
 
         <!-- Main Content -->
-        <Grid Grid.Row="2" Margin="15">
+        <Grid Grid.Row="2" Margin="10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="350"/>
+                <ColumnDefinition Width="320"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Unit List -->
-            <Border Grid.Column="0" Background="#2D2D2D" CornerRadius="5" Margin="0,0,10,0">
+            <!-- LEFT: Faction + Unit List -->
+            <Border Grid.Column="0" Background="#2D2D2D" CornerRadius="5" Margin="0,0,8,0">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Text="القائمة المكتشفة" Foreground="White" Margin="15,15,15,10" FontSize="16" FontWeight="SemiBold"/>
-                    
-                    <ListBox Grid.Row="1" ItemsSource="{Binding Units}" SelectedItem="{Binding SelectedUnit}" 
-                             Background="Transparent" BorderThickness="0" Foreground="White" Margin="5">
+                    <!-- Faction Filter -->
+                    <Border Grid.Row="0" Background="#333333" Padding="10" CornerRadius="5,5,0,0">
+                        <StackPanel>
+                            <TextBlock Text="اختر الفصيل:" Foreground="#AAAAAA" FontSize="12" Margin="0,0,0,5"/>
+                            <ComboBox ItemsSource="{Binding Factions}" SelectedItem="{Binding SelectedFaction}"
+                                      Height="30" VerticalContentAlignment="Center" FontSize="13"
+                                      Background="#444444" Foreground="White" BorderBrush="#555555"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Stats -->
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,8,10,5">
+                        <TextBlock Text="الوحدات: " Foreground="#888888" FontSize="11"/>
+                        <TextBlock Text="{Binding DisplayedUnits.Count}" Foreground="#00CC66" FontSize="11" FontWeight="Bold"/>
+                        <TextBlock Text=" / " Foreground="#555555" FontSize="11"/>
+                        <TextBlock Text="{Binding Units.Count}" Foreground="#888888" FontSize="11"/>
+                    </StackPanel>
+
+                    <!-- Unit List (simple, fast, virtualized) -->
+                    <ListBox Grid.Row="2" ItemsSource="{Binding DisplayedUnits}" SelectedItem="{Binding SelectedUnit}"
+                             Background="Transparent" BorderThickness="0" Foreground="White" Margin="5,0,5,5"
+                             VirtualizingPanel.IsVirtualizing="True"
+                             VirtualizingPanel.VirtualizationMode="Recycling"
+                             ScrollViewer.IsDeferredScrollingEnabled="True"
+                             ScrollViewer.CanContentScroll="True">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Border Padding="10" Margin="2" CornerRadius="3" Background="#3D3D3D">
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding TechnicalName}" FontWeight="Bold" FontSize="14"/>
-                                        <TextBlock Text="{Binding Side}" Foreground="#999999"/>
-                                    </StackPanel>
+                                <Border Padding="6,4" Margin="1" CornerRadius="3" Background="#3D3D3D">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Width="40" Height="40" CornerRadius="3" Background="#2A2A2A" Margin="0,0,8,0">
+                                            <Image Source="{Binding ButtonImage, Converter={StaticResource IconConverter}}" 
+                                                   Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding TechnicalName}" FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Foreground="White"/>
+                                            <TextBlock Text="{Binding Side}" Foreground="#FF6B00" FontSize="10" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" Text="{Binding BuildCost}" Foreground="#00CC66" FontSize="10" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                    </Grid>
                                 </Border>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
 
-                    <Button Grid.Row="2" Content="تحديث القائمة" Margin="15" Padding="10" 
-                            Command="{Binding LoadModCommand}" Background="#444444" Foreground="White"
+                    <!-- Load Button -->
+                    <Button Grid.Row="3" Content="تحميل المود" Margin="10" Padding="8"
+                            Command="{Binding LoadModCommand}" Background="#FF6B00" Foreground="White" FontWeight="Bold"
                             IsEnabled="{Binding HasSourcePath}"/>
                 </Grid>
             </Border>
 
-            <!-- Details & Graph -->
+            <!-- RIGHT: Details Panel -->
             <Border Grid.Column="1" Background="#2D2D2D" CornerRadius="5">
-                <Grid Margin="20">
+                <Grid Margin="15">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0" HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,15">
-                        <TextBlock Text="تفاصيل الوحدة: " Foreground="#AAAAAA" FontSize="18"/>
-                        <TextBlock Text="{Binding SelectedUnit.TechnicalName, TargetNullValue='لم يتم اختيار وحدة'}" 
-                                   Foreground="White" FontSize="18" FontWeight="Bold"/>
-                    </StackPanel>
+                    <!-- Unit Name -->
+                    <TextBlock Grid.Row="0" Margin="0,0,0,10">
+                        <Run Text="{Binding SelectedUnit.TechnicalName, TargetNullValue='اختر وحدة من القائمة', Mode=OneWay}" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                        <Run Text=" " />
+                        <Run Text="{Binding SelectedUnit.Side, Mode=OneWay}" Foreground="#FF6B00" FontSize="14"/>
+                    </TextBlock>
 
-                    <!-- Indicators -->
-                    <Border Grid.Row="1" Padding="15" Background="#3D3D3D" CornerRadius="5" Margin="0,0,0,20">
+                    <!-- Stats Row -->
+                    <Border Grid.Row="1" Padding="12" Background="#3D3D3D" CornerRadius="5" Margin="0,0,0,10">
                         <StackPanel Orientation="Horizontal">
-                            <StackPanel Margin="0,0,30,0">
-                                <TextBlock Text="حالة الاكتمال" Foreground="#AAAAAA" FontSize="12"/>
-                                <TextBlock Text="{Binding CurrentGraph.Status}" Foreground="#00CC66" FontSize="16" FontWeight="Bold"/>
-                            </StackPanel>
-                            <StackPanel>
-                                <TextBlock Text="نسبة الملفات" Foreground="#AAAAAA" FontSize="12"/>
-                                <TextBlock Text="{Binding ProgressValue, StringFormat={}{0}%}" Foreground="#0078D4" FontSize="16" FontWeight="Bold"/>
-                            </StackPanel>
+                            <TextBlock Foreground="#AAAAAA" FontSize="13">
+                                <Run Text="التبعيات: "/><Run Text="{Binding TotalDependencyCount, Mode=OneWay}" Foreground="#0078D4" FontWeight="Bold"/>
+                                <Run Text="  |  الأسلحة: "/><Run Text="{Binding WeaponAnalysisCount, Mode=OneWay}" Foreground="#FF6B00" FontWeight="Bold"/>
+                                <Run Text="  |  المفقودة: "/><Run Text="{Binding CurrentGraph.MissingCount, TargetNullValue=0, Mode=OneWay}" Foreground="#FF4444" FontWeight="Bold"/>
+                                <Run Text="  |  الحالة: "/><Run Text="{Binding CurrentGraph.Status, TargetNullValue=-, Mode=OneWay}" Foreground="#00CC66" FontWeight="Bold"/>
+                            </TextBlock>
+                            <TextBlock Text="  جاري التحليل..." Foreground="#FFD700" Visibility="{Binding IsAnalyzing, Converter={StaticResource BoolToVisibility}}" FontSize="12"/>
                         </StackPanel>
                     </Border>
 
+                    <!-- Model Info -->
+                    <Border Grid.Row="2" Padding="8" Background="#353535" CornerRadius="3" Margin="0,0,0,10">
+                        <TextBlock Foreground="#999999" FontSize="11">
+                            <Run Text="النموذج: "/><Run Text="{Binding SelectedUnit.ModelW3D, TargetNullValue=-, Mode=OneWay}" Foreground="#CCCCCC"/>
+                        </TextBlock>
+                    </Border>
+
                     <!-- Dependency Tree -->
-                    <DockPanel Grid.Row="2">
-                        <TextBlock DockPanel.Dock="Top" Text="شجرة التبعيات (W3D, DDS, Audio)" Foreground="#AAAAAA" Margin="0,0,0,10"/>
-                        <TreeView Background="#252525" Foreground="White" BorderBrush="#3F3F3F" ItemsSource="{Binding CurrentGraph.RootNode.Dependencies}">
+                    <DockPanel Grid.Row="3">
+                        <TextBlock DockPanel.Dock="Top" Text="شجرة التبعيات (W3D, DDS, Audio)" Foreground="#AAAAAA" FontSize="12" Margin="0,0,0,8"/>
+                        <TreeView Background="#252525" Foreground="White" BorderBrush="#3F3F3F"
+                                  ItemsSource="{Binding CurrentGraph.RootNode.Dependencies}"
+                                  VirtualizingPanel.IsVirtualizing="True">
                             <TreeView.ItemTemplate>
                                 <HierarchicalDataTemplate ItemsSource="{Binding Dependencies}">
                                     <StackPanel Orientation="Horizontal" Margin="2">
-                                        <TextBlock Text="{Binding Name}"/>
-                                        <TextBlock Text="{Binding Type, StringFormat=' ({0})'}" Foreground="#666666" Margin="5,0,0,0"/>
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="12"/>
+                                        <TextBlock Text="{Binding Type, StringFormat=' [{0}]'}" Foreground="#888888" FontSize="11" Margin="4,0,0,0"/>
+                                        <TextBlock Foreground="#00CC66" FontSize="10" Margin="6,0,0,0">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="✓"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Status}" Value="Missing">
+                                                            <Setter Property="Text" Value="✗"/>
+                                                            <Setter Property="Foreground" Value="#FF4444"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
                                     </StackPanel>
                                 </HierarchicalDataTemplate>
                             </TreeView.ItemTemplate>
                         </TreeView>
                     </DockPanel>
 
-                    <!-- Progress & Actions -->
-                    <Grid Grid.Row="3" Margin="0,20,0,0">
-                        <ProgressBar Height="10" Value="{Binding ProgressValue}" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}" 
+                    <!-- Actions -->
+                    <Grid Grid.Row="4" Margin="0,10,0,0">
+                        <ProgressBar Height="6" Value="{Binding ProgressValue}" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"
                                      Foreground="#0078D4" Background="#333333" BorderThickness="0" VerticalAlignment="Top"/>
-                        
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-                            <TextBlock Text="{Binding StatusMessage}" Foreground="#AAAAAA" VerticalAlignment="Center" Margin="0,0,20,0"/>
-                            <Button Content="نقل الوحدة ذكياً" Padding="25,10" Background="#0078D4" Foreground="White" FontWeight="Bold"
-                                    Command="{Binding TransferCommand}"
-                                    IsEnabled="{Binding HasBothPaths}"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+                            <ComboBox ItemsSource="{Binding TargetFactions}" SelectedItem="{Binding SelectedTargetFaction}"
+                                      Width="130" Height="28" VerticalContentAlignment="Center" Background="#333333" Foreground="White" BorderBrush="#444444" Margin="0,0,8,0"/>
+                            <Button Content="نقل الوحدة" Padding="20,6" Background="#0078D4" Foreground="White" FontWeight="Bold"
+                                    Command="{Binding TransferCommand}"/>
                         </StackPanel>
                     </Grid>
                 </Grid>
             </Border>
         </Grid>
 
-        <!-- Footer / Status Bar -->
-        <Border Grid.Row="3" Background="#1E1E1E" Padding="10,5" BorderThickness="0,1,0,0" BorderBrush="#3F3F3F">
-            <TextBlock Text="{Binding StatusMessage, FallbackValue='ZeroHour Studio Engine V2 - Phase 1 Ready'}" Foreground="#666666" FontSize="10"/>
+        <!-- Status Bar -->
+        <Border Grid.Row="3" Background="#1E1E1E" Padding="10,4" BorderThickness="0,1,0,0" BorderBrush="#3F3F3F">
+            <Grid>
+                <TextBlock Text="{Binding StatusMessage}" Foreground="#888888" FontSize="10" TextTrimming="CharacterEllipsis"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Foreground="#666666" FontSize="10">
+                        <Run Text="الوحدات: "/><Run Text="{Binding Units.Count, Mode=OneWay}" Foreground="#00CC66"/>
+                        <Run Text=" | المعروضة: "/><Run Text="{Binding DisplayedUnits.Count, Mode=OneWay}" Foreground="#0078D4"/>
+                        <Run Text=" | التحليلات: "/><Run Text="{Binding AnalysisCount, Mode=OneWay}" Foreground="#FF6B00"/>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </Window>

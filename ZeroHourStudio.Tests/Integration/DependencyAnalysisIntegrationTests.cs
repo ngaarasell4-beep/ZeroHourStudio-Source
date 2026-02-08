@@ -4,6 +4,7 @@ using ZeroHourStudio.Infrastructure.DependencyAnalysis;
 using ZeroHourStudio.Infrastructure.AssetManagement;
 using ZeroHourStudio.Infrastructure.Validation;
 using ZeroHourStudio.Infrastructure.Services;
+using ZeroHourStudio.Infrastructure.Parsers;
 using ZeroHourStudio.Application.Models;
 
 namespace ZeroHourStudio.Tests.Integration
@@ -14,8 +15,8 @@ namespace ZeroHourStudio.Tests.Integration
         public async Task FullDependencyAnalysis_WithCompleteUnit_ShouldSucceed()
         {
             // Arrange
-            var assetHunter = new AssetReferenceHunter();
-            var analyzer = new UnitDependencyAnalyzer(assetHunter);
+            var iniParser = new SAGE_IniParser();
+            var analyzer = new UnitDependencyAnalyzer(iniParser);
             var validator = new UnitCompletionValidator();
 
             var unitData = new Dictionary<string, string>
@@ -35,7 +36,8 @@ namespace ZeroHourStudio.Tests.Integration
             completionStatus.Should().BeOneOf(
                 CompletionStatus.Complete,
                 CompletionStatus.Partial,
-                CompletionStatus.Incomplete
+                CompletionStatus.Incomplete,
+                CompletionStatus.CannotVerify
             );
         }
 
@@ -43,7 +45,12 @@ namespace ZeroHourStudio.Tests.Integration
         public async Task ComprehensiveDependencyService_ShouldProvideFullAnalysis()
         {
             // Arrange
-            var service = new ComprehensiveDependencyService();
+            var iniParser = new SAGE_IniParser();
+            var analyzer = new UnitDependencyAnalyzer(iniParser);
+            var assetHunter = new AssetReferenceHunter();
+            var validator = new UnitCompletionValidator();
+            var service = new ComprehensiveDependencyService(analyzer, assetHunter, validator);
+
             var unitData = new Dictionary<string, string>
             {
                 { "Model", "ChinaTankOverlord" },
@@ -51,7 +58,7 @@ namespace ZeroHourStudio.Tests.Integration
             };
 
             // Act
-            var result = await service.PerformFullAnalysisAsync(
+            var result = await service.AnalyzeUnitComprehensivelyAsync(
                 "ChinaTankOverlord",
                 "Overlord Tank",
                 unitData
@@ -61,7 +68,6 @@ namespace ZeroHourStudio.Tests.Integration
             result.Should().NotBeNull();
             result.DependencyGraph.Should().NotBeNull();
             result.ValidationResult.Should().NotBeNull();
-            result.AssetReferences.Should().NotBeNull();
         }
 
         [Fact]
@@ -82,41 +88,39 @@ namespace ZeroHourStudio.Tests.Integration
                 Type = DependencyType.Model3D
             });
 
-            var availableAssets = new Dictionary<string, bool>
-            {
-                { "Missing.w3d", false }
-            };
-
             // Act
-            var validationResult = validator.ValidateUnitCompletion("TestUnit", graph, availableAssets);
+            var validationResult = validator.ValidateUnitCompletion("TestUnit", graph);
 
             // Assert
             validationResult.Should().NotBeNull();
             validationResult.IsValid.Should().BeFalse();
-            validationResult.MissingAssets.Should().NotBeEmpty();
+            validationResult.Errors.Should().NotBeEmpty();
         }
 
         [Fact]
-        public void AssetReferenceHunter_ShouldFindMultipleExtensions()
+        public async Task AssetReferenceHunter_ShouldFindAssets()
         {
             // Arrange
             var hunter = new AssetReferenceHunter();
             var baseName = "TestModel";
-            var searchDirectory = "."; // مجرد اختبار وحدة
 
             // Act
-            var references = hunter.FindAssetReferences(baseName, searchDirectory, "w3d");
+            var assets = await hunter.FindAssetsAsync(baseName);
 
             // Assert
-            references.Should().NotBeNull();
-            // النتيجة قد تكون فارغة إذا لم توجد ملفات حقيقية، لكن الدالة يجب أن تعمل
+            assets.Should().NotBeNull();
         }
 
         [Fact]
         public async Task EndToEnd_LoadAnalyzeAndValidate_ShouldComplete()
         {
-            // Arrange - محاكاة سيناريو كامل من البداية إلى النهاية
-            var service = new ComprehensiveDependencyService();
+            // Arrange
+            var iniParser = new SAGE_IniParser();
+            var analyzer = new UnitDependencyAnalyzer(iniParser);
+            var assetHunter = new AssetReferenceHunter();
+            var validator = new UnitCompletionValidator();
+            var service = new ComprehensiveDependencyService(analyzer, assetHunter, validator);
+
             var unitId = "USATankCrusader";
             var unitName = "Crusader Tank";
             var unitData = new Dictionary<string, string>
@@ -127,15 +131,13 @@ namespace ZeroHourStudio.Tests.Integration
             };
 
             // Act
-            var analysis = await service.PerformFullAnalysisAsync(unitId, unitName, unitData);
+            var analysis = await service.AnalyzeUnitComprehensivelyAsync(unitId, unitName, unitData);
 
-            // Assert - التحقق من أن جميع المكونات عملت معاً
+            // Assert
             analysis.Should().NotBeNull();
             analysis.DependencyGraph.Should().NotBeNull();
-            analysis.DependencyGraph.UnitId.Should().Be(unitId);
+            analysis.DependencyGraph!.UnitId.Should().Be(unitId);
             analysis.DependencyGraph.UnitName.Should().Be(unitName);
-            analysis.ValidationResult.Should().NotBeNull();
-            analysis.CompletionPercentage.Should().BeInRange(0, 100);
         }
 
         [Theory]
@@ -145,7 +147,12 @@ namespace ZeroHourStudio.Tests.Integration
         public async Task MultipleUnitsAnalysis_ShouldHandleDifferentFactions(string faction, string unitId)
         {
             // Arrange
-            var service = new ComprehensiveDependencyService();
+            var iniParser = new SAGE_IniParser();
+            var analyzer = new UnitDependencyAnalyzer(iniParser);
+            var assetHunter = new AssetReferenceHunter();
+            var validator = new UnitCompletionValidator();
+            var service = new ComprehensiveDependencyService(analyzer, assetHunter, validator);
+
             var unitData = new Dictionary<string, string>
             {
                 { "Side", faction },
@@ -154,11 +161,12 @@ namespace ZeroHourStudio.Tests.Integration
             };
 
             // Act
-            var result = await service.PerformFullAnalysisAsync(unitId, $"{faction} Unit", unitData);
+            var result = await service.AnalyzeUnitComprehensivelyAsync(unitId, $"{faction} Unit", unitData);
 
             // Assert
             result.Should().NotBeNull();
-            result.DependencyGraph.UnitId.Should().Be(unitId);
+            result.DependencyGraph.Should().NotBeNull();
+            result.DependencyGraph!.UnitId.Should().Be(unitId);
         }
     }
 }

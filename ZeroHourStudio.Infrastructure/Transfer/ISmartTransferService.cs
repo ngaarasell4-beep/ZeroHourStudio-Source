@@ -31,6 +31,7 @@ public class SmartTransferResult
     public string Message { get; set; } = string.Empty;
     public int TransferredFilesCount { get; set; }
     public long TransferredBytesCount { get; set; }
+    public int RecoveredFilesCount { get; set; }
     public List<string> FailedFiles { get; set; } = new();
     public TimeSpan Duration { get; set; }
 }

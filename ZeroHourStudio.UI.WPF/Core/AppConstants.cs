@@ -33,7 +33,7 @@ namespace ZeroHourStudio.UI.WPF.Core
         /// <summary>
         /// حد أقصى للوحدات المعروضة في القائمة
         /// </summary>
-        public const int MaxUnitsDisplayed = 1000;
+        public const int MaxUnitsDisplayed = int.MaxValue;
 
         /// <summary>
         /// حد أقصى للتنبيهات المحفوظة

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ZeroHourStudio.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e8f486958bc045a4847c183feea992cf7a6660c1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+21679b37b00fab38b4ff556b6cedbb32f645f9a0")]
 [assembly: System.Reflection.AssemblyProductAttribute("ZeroHourStudio.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ZeroHourStudio.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

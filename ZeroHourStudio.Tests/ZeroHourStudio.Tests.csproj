@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
@@ -27,6 +27,7 @@
     <ProjectReference Include="..\ZeroHourStudio.Domain\ZeroHourStudio.Domain.csproj" />
     <ProjectReference Include="..\ZeroHourStudio.Application\ZeroHourStudio.Application.csproj" />
     <ProjectReference Include="..\ZeroHourStudio.Infrastructure\ZeroHourStudio.Infrastructure.csproj" />
+    <ProjectReference Include="..\ZeroHourStudio.UI.WPF\ZeroHourStudio.UI.WPF.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,6 +3,7 @@ using Moq;
 using Xunit;
 using ZeroHourStudio.Infrastructure.DependencyAnalysis;
 using ZeroHourStudio.Infrastructure.AssetManagement;
+using ZeroHourStudio.Infrastructure.Parsers;
 using ZeroHourStudio.Application.Models;
 using ZeroHourStudio.Application.Interfaces;
 using System.Collections.Generic;
@@ -11,13 +12,13 @@ namespace ZeroHourStudio.Tests.Services
 {
     public class DependencyAnalyzerTests
     {
-        private readonly AssetReferenceHunter _assetHunter;
+        private readonly SAGE_IniParser _iniParser;
         private readonly UnitDependencyAnalyzer _analyzer;
 
         public DependencyAnalyzerTests()
         {
-            _assetHunter = new AssetReferenceHunter();
-            _analyzer = new UnitDependencyAnalyzer(_assetHunter);
+            _iniParser = new SAGE_IniParser();
+            _analyzer = new UnitDependencyAnalyzer(_iniParser);
         }
 
         [Fact]
@@ -122,11 +123,11 @@ namespace ZeroHourStudio.Tests.Services
         public void GetCompletionPercentage_AllFound_ShouldReturn100()
         {
             // Arrange
-            var graph = new UnitDependencyGraph
-            {
-                FoundCount = 10,
-                MissingCount = 0
-            };
+            var graph = new UnitDependencyGraph();
+            for (int i = 0; i < 10; i++)
+                graph.AllNodes.Add(new DependencyNode { Name = $"f{i}.w3d", Status = AssetStatus.Found });
+            graph.FoundCount = 10;
+            graph.MissingCount = 0;
 
             // Act
             double percentage = graph.GetCompletionPercentage();
@@ -139,11 +140,13 @@ namespace ZeroHourStudio.Tests.Services
         public void GetCompletionPercentage_HalfMissing_ShouldReturn50()
         {
             // Arrange
-            var graph = new UnitDependencyGraph
-            {
-                FoundCount = 5,
-                MissingCount = 5
-            };
+            var graph = new UnitDependencyGraph();
+            for (int i = 0; i < 5; i++)
+                graph.AllNodes.Add(new DependencyNode { Name = $"f{i}.w3d", Status = AssetStatus.Found });
+            for (int i = 0; i < 5; i++)
+                graph.AllNodes.Add(new DependencyNode { Name = $"m{i}.w3d", Status = AssetStatus.Missing });
+            graph.FoundCount = 5;
+            graph.MissingCount = 5;
 
             // Act
             double percentage = graph.GetCompletionPercentage();

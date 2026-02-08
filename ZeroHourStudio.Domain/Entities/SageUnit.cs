@@ -29,4 +29,14 @@ public class SageUnit
     /// اسم ملف النموذج ثلاثي الأبعاد
     /// </summary>
     public string ModelW3D { get; set; } = string.Empty;
+
+    /// <summary>
+    /// اسم صورة الأيقونة (ButtonImage من CommandButton)
+    /// </summary>
+    public string ButtonImage { get; set; } = string.Empty;
+
+    /// <summary>
+    /// مسار صورة الأيقونة المستخرجة (للعرض في UI)
+    /// </summary>
+    public string IconPath { get; set; } = string.Empty;
 }
