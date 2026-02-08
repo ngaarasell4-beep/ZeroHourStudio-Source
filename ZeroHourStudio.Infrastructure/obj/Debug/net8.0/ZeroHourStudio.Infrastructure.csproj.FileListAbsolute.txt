@@ -1,0 +1,6 @@
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Debug\net8.0\ZeroHourStudio.Infrastructure.csproj.AssemblyReference.cache
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Debug\net8.0\ZeroHourStudio.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Debug\net8.0\ZeroHourStudio.Infrastructure.AssemblyInfoInputs.cache
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Debug\net8.0\ZeroHourStudio.Infrastructure.AssemblyInfo.cs
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Debug\net8.0\ZeroHourStudio.Infrastructure.csproj.CoreCompileInputs.cache
+D:\ZeroHourStudio\ZeroHourStudio.Infrastructure\obj\Debug\net8.0\ZeroHourStudio.Infrastructure.sourcelink.json
