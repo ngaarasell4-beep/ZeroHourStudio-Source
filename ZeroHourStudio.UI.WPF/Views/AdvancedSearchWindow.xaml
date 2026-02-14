@@ -1,0 +1,105 @@
+<Window x:Class="ZeroHourStudio.UI.WPF.Views.AdvancedSearchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewmodels="clr-namespace:ZeroHourStudio.UI.WPF.ViewModels"
+        Title="بحث متقدم - ZeroHour Studio" 
+        Height="500" Width="600"
+        Background="#1E1E1E"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+
+    <Window.DataContext>
+        <viewmodels:AdvancedSearchViewModel/>
+    </Window.DataContext>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Text="بحث متقدم عن الوحدات" 
+                   FontSize="20" FontWeight="Bold" Foreground="White" 
+                   Margin="0,0,0,20"/>
+
+        <!-- Search Options -->
+        <Border Grid.Row="1" Background="#2D2D2D" CornerRadius="5" Padding="20">
+            <StackPanel>
+                <!-- Filter Type Selection -->
+                <TextBlock Text="نوع البحث" Foreground="#AAAAAA" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                    <CheckBox Content="الاسم التقني" IsChecked="{Binding SearchByName}" 
+                              Foreground="White" Margin="0,0,20,0"/>
+                    <CheckBox Content="الفصيل" IsChecked="{Binding SearchByFaction}" 
+                              Foreground="White" Margin="0,0,20,0"/>
+                    <CheckBox Content="نوع السلاح" IsChecked="{Binding SearchByWeaponType}" 
+                              Foreground="White" Margin="0,0,20,0"/>
+                    <CheckBox Content="النموذج" IsChecked="{Binding SearchByModel}" 
+                              Foreground="White"/>
+                </StackPanel>
+
+                <!-- Name Filter -->
+                <TextBlock Text="تصفية بالاسم" Foreground="#AAAAAA" FontSize="12" Margin="0,0,0,5"/>
+                <TextBox Text="{Binding NameFilter}" Height="30" Background="#333333" 
+                         Foreground="White" BorderBrush="#444444" Padding="10,0"
+                         Margin="0,0,0,15"/>
+
+                <!-- Faction Filter -->
+                <TextBlock Text="تصفية بالفصيل" Foreground="#AAAAAA" FontSize="12" Margin="0,0,0,5"/>
+                <ComboBox ItemsSource="{Binding AvailableFactions}" 
+                          SelectedItem="{Binding FactionFilter}"
+                          Height="30" Background="#333333" Foreground="White" 
+                          BorderBrush="#444444" VerticalContentAlignment="Center" Padding="10,0"
+                          Margin="0,0,0,15"/>
+
+                <!-- Weapon Type Filter -->
+                <TextBlock Text="تصفية بنوع السلاح" Foreground="#AAAAAA" FontSize="12" Margin="0,0,0,5"/>
+                <ComboBox ItemsSource="{Binding AvailableWeaponTypes}" 
+                          SelectedItem="{Binding WeaponTypeFilter}"
+                          Height="30" Background="#333333" Foreground="White" 
+                          BorderBrush="#444444" VerticalContentAlignment="Center" Padding="10,0"
+                          Margin="0,0,0,15"/>
+
+                <!-- Status Filter -->
+                <TextBlock Text="تصفية بالحالة" Foreground="#AAAAAA" FontSize="12" Margin="0,0,0,5"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                    <CheckBox Content="مكتملة فقط" IsChecked="{Binding ShowOnlyComplete}" 
+                              Foreground="White" Margin="0,0,20,0"/>
+                    <CheckBox Content="غير مكتملة فقط" IsChecked="{Binding ShowOnlyIncomplete}" 
+                              Foreground="White"/>
+                </StackPanel>
+
+                <!-- Search Results Preview -->
+                <Border Background="#3D3D3D" CornerRadius="3" Padding="10">
+                    <TextBlock Text="سيتم عرض النتائج هنا..." 
+                               Foreground="#999999" FontSize="12" 
+                               TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                               Height="50"/>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" 
+                    HorizontalAlignment="Left" Margin="0,20,0,0">
+            <Button Content="بحث" Width="100" Height="35" 
+                    Background="#0078D4" Foreground="White" 
+                    Margin="0,0,10,0" Click="Search_Click"/>
+            <Button Content="إعادة تعيين" Width="100" Height="35" 
+                    Background="#666666" Foreground="White" 
+                    Margin="0,0,10,0" Click="Reset_Click"/>
+            <Button Content="تصدير النتائج" Width="120" Height="35" 
+                    Background="#FF6B00" Foreground="White" 
+                    Click="Export_Click"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" 
+                    HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="إلغاء" Width="80" Height="35" 
+                    Background="#444444" Foreground="White" 
+                    Click="Cancel_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

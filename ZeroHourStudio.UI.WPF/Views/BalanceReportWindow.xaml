@@ -1,0 +1,136 @@
+<Window x:Class="ZeroHourStudio.UI.WPF.Views.BalanceReportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="⚖️ تقرير التوازن"
+        Width="700" Height="550"
+        WindowStartupLocation="CenterOwner"
+        Background="#1E1E2E"
+        Foreground="White"
+        FontFamily="Segoe UI">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="⚖️ تقرير توازن الوحدة" FontSize="20" FontWeight="Bold" Foreground="#00CC66"/>
+            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                <TextBlock Text="الوحدة: " Foreground="#AAAAAA"/>
+                <TextBlock x:Name="UnitNameText" Foreground="#87CEEB" FontWeight="SemiBold" Margin="0,0,20,0"/>
+                <TextBlock Text="النتيجة الإجمالية: " Foreground="#AAAAAA"/>
+                <TextBlock x:Name="OverallScoreText" FontWeight="Bold" FontSize="14"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Overall Summary -->
+        <Border Grid.Row="1" Background="#252538" CornerRadius="6" Padding="12,8" Margin="0,0,0,10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="VerdictText" FontSize="16" FontWeight="Bold" Margin="0,0,16,0"/>
+                <TextBlock x:Name="PeerCountText" Foreground="#888888" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Ratings List + empty state -->
+        <Grid Grid.Row="2">
+            <ListBox x:Name="RatingsList" Background="#1A1A2A" BorderBrush="#333348" BorderThickness="1">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="4,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Category Name -->
+                        <TextBlock Grid.Column="0" Text="{Binding Category}" Foreground="#CCCCCC"
+                                   FontWeight="SemiBold" VerticalAlignment="Center"/>
+
+                        <!-- Value -->
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Value, StringFormat='{}{0:F1}'}" Foreground="#87CEEB" FontSize="13"/>
+                            <TextBlock Text="القيمة" Foreground="#555577" FontSize="9"/>
+                        </StackPanel>
+
+                        <!-- Average -->
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Average, StringFormat='{}{0:F1}'}" Foreground="#AAAAAA" FontSize="13"/>
+                            <TextBlock Text="المتوسط" Foreground="#555577" FontSize="9"/>
+                        </StackPanel>
+
+                        <!-- Progress Bar -->
+                        <Grid Grid.Column="3" VerticalAlignment="Center" Margin="8,0">
+                            <Border Background="#2A2A3A" CornerRadius="4" Height="12"/>
+                            <Border CornerRadius="4" Height="12" HorizontalAlignment="Left"
+                                    MaxWidth="200">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#00CC66"/>
+                                        <Setter Property="Width" Value="100"/>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+                        </Grid>
+
+                        <!-- Verdict -->
+                        <TextBlock Grid.Column="4" Text="{Binding Verdict}" FontSize="11"
+                                   VerticalAlignment="Center" Margin="8,0,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="#00CC66"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Verdict}" Value="⚠ مبالغ فيه">
+                                            <Setter Property="Foreground" Value="#FF6666"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Verdict}" Value="🔼 فوق المتوسط">
+                                            <Setter Property="Foreground" Value="#FFD700"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Verdict}" Value="🔽 تحت المتوسط">
+                                            <Setter Property="Foreground" Value="#87CEEB"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Verdict}" Value="⚠ ضعيف جداً">
+                                            <Setter Property="Foreground" Value="#FF6666"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Padding" Value="4"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            </ListBox>
+            <TextBlock x:Name="EmptyBalanceMessage" Visibility="Collapsed"
+                       Text="لا توجد بيانات للمقارنة. تأكد من فتح مود مصدر يحتوي على ملفات INI مفكوكة (مثل Data\INI أو مجلد INI)."
+                       Foreground="#888" FontSize="13" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24"/>
+        </Grid>
+
+        <!-- Close Button -->
+        <StackPanel Grid.Row="3" HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Content="إغلاق" Click="Close_Click" Width="80" Height="34"
+                    Background="#3A3A4A" Foreground="White" BorderBrush="#555577" BorderThickness="1" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="8,4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

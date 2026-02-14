@@ -1,0 +1,123 @@
+<UserControl x:Class="ZeroHourStudio.UI.WPF.Views.CsfEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <Border CornerRadius="12" BorderBrush="#1A2332" BorderThickness="1"
+            Background="#0D1117" Padding="12">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                <Border Width="4" Height="20" CornerRadius="2" Background="#FF6B00"/>
+                <TextBlock Text="محرر CSF" FontSize="14" FontWeight="SemiBold"
+                           Foreground="#E8EDF3" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="LOCALIZATION" FontSize="10" Foreground="#556677"
+                           Margin="8,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- CSF File Path -->
+            <Grid Grid.Row="1" Margin="0,0,0,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Text="{Binding CsfFilePath, UpdateSourceTrigger=PropertyChanged}"
+                         Background="#161B22" Foreground="#C9D1D9" BorderBrush="#21262D"
+                         Padding="6,4" FontSize="10" VerticalContentAlignment="Center"/>
+                <Button Grid.Column="1" Content="فتح" Command="{Binding LoadCsfCommand}"
+                        Background="#21262D" Foreground="#C9D1D9" BorderBrush="#30363D"
+                        Padding="8,4" Margin="4,0" FontSize="10" Cursor="Hand"/>
+                <Button Grid.Column="2" Content="حفظ" Command="{Binding SaveCsfCommand}"
+                        Background="#00FF88" Foreground="#0A0E17" BorderThickness="0"
+                        Padding="8,4" FontSize="10" FontWeight="Bold" Cursor="Hand"/>
+            </Grid>
+
+            <!-- Filter -->
+            <TextBox Grid.Row="2" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
+                     Background="#161B22" Foreground="#C9D1D9" BorderBrush="#21262D"
+                     Padding="6,4" FontSize="10" Margin="0,0,0,6"/>
+
+            <!-- Entries List -->
+            <ListBox Grid.Row="3" ItemsSource="{Binding Entries}"
+                     SelectedItem="{Binding SelectedEntry}"
+                     Background="Transparent" BorderThickness="0"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Padding" Value="6,4"/>
+                        <Setter Property="Margin" Value="0,1"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                            CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Bd" Property="Background" Value="#1A2332"/>
+                                            <Setter TargetName="Bd" Property="BorderBrush" Value="#FF6B00"/>
+                                            <Setter TargetName="Bd" Property="BorderThickness" Value="1"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Label}" FontSize="10"
+                                       Foreground="#00D4FF" FontFamily="Consolas"/>
+                            <TextBlock Text="{Binding EnglishText}" FontSize="10"
+                                       Foreground="#C9D1D9" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- Selected Entry Editor -->
+            <Border Grid.Row="4" CornerRadius="8" Background="#161B22" Padding="8" Margin="0,6,0,0"
+                    DataContext="{Binding SelectedEntry}">
+                <StackPanel>
+                    <TextBlock Text="Label:" Foreground="#556677" FontSize="9"/>
+                    <TextBox Text="{Binding Label, UpdateSourceTrigger=PropertyChanged}"
+                             Background="#0D1117" Foreground="#00D4FF" BorderBrush="#21262D"
+                             FontFamily="Consolas" Padding="6,3" FontSize="10" Margin="0,2,0,6"/>
+
+                    <TextBlock Text="English:" Foreground="#556677" FontSize="9"/>
+                    <TextBox Text="{Binding EnglishText, UpdateSourceTrigger=PropertyChanged}"
+                             Background="#0D1117" Foreground="#C9D1D9" BorderBrush="#21262D"
+                             Padding="6,3" FontSize="10" Margin="0,2,0,6" TextWrapping="Wrap"/>
+
+                    <TextBlock Text="عربي (Arabic):" Foreground="#556677" FontSize="9"/>
+                    <TextBox Text="{Binding ArabicText, UpdateSourceTrigger=PropertyChanged}"
+                             Background="#0D1117" Foreground="#FF6B00" BorderBrush="#21262D"
+                             Padding="6,3" FontSize="10" Margin="0,2,0,0"
+                             FlowDirection="RightToLeft" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Add Entry Button -->
+            <Button Grid.Row="5" Content="+ إضافة مدخل" Command="{Binding AddEntryCommand}"
+                    Background="#21262D" Foreground="#C9D1D9" BorderBrush="#30363D"
+                    Padding="0,6" Margin="0,6,0,0" FontSize="10" Cursor="Hand"/>
+        </Grid>
+    </Border>
+</UserControl>

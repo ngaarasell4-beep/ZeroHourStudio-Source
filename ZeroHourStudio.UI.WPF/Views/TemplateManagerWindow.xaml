@@ -1,0 +1,145 @@
+<Window x:Class="ZeroHourStudio.UI.WPF.Views.TemplateManagerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="📋 مدير القوالب"
+        Width="650" Height="500"
+        WindowStartupLocation="CenterOwner"
+        Background="#1E1E2E"
+        Foreground="White"
+        FontFamily="Segoe UI">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,12">
+            <TextBlock Text="📋 مدير قوالب النقل" FontSize="20" FontWeight="Bold" Foreground="#00CC66" Margin="0,0,0,4"/>
+            <TextBlock Text="احفظ إعدادات النقل لإعادة استخدامها لاحقاً" Foreground="#888" FontSize="12"/>
+        </StackPanel>
+
+        <!-- Templates List + empty state -->
+        <Grid Grid.Row="1">
+            <ListBox x:Name="TemplatesList"
+                     Background="#1A1A2A" BorderBrush="#333348" BorderThickness="1"
+                     SelectionChanged="TemplatesList_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="10,8" Margin="2">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Foreground="#FFD700" FontSize="14"/>
+                                <TextBlock Text="{Binding Description}" Foreground="#AAAAAA" FontSize="11" Margin="0,2,0,0"
+                                           TextTrimming="CharacterEllipsis"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                    <TextBlock Foreground="#87CEEB" FontSize="10" Margin="0,0,12,0">
+                                        <Run Text="فصيل: "/><Run Text="{Binding TargetFaction, Mode=OneWay}"/>
+                                    </TextBlock>
+                                    <TextBlock Foreground="#888" FontSize="10">
+                                        <Run Text="استخدم "/><Run Text="{Binding TimesUsed, Mode=OneWay}"/><Run Text=" مرة"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Button Grid.Column="1" Content="🗑" Click="DeleteTemplate_Click" Tag="{Binding}"
+                                    Width="30" Height="30" Background="Transparent" Foreground="#FF6666"
+                                    BorderThickness="0" Cursor="Hand" FontSize="14" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Padding" Value="0"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#2A3A4A"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            </ListBox>
+            <TextBlock x:Name="NoTemplatesText" Text="لا توجد قوالب محفوظة. احفظ قالباً جديداً باستخدام النموذج أدناه."
+                       Foreground="#888" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Visibility="Collapsed" TextWrapping="Wrap" Margin="24"/>
+        </Grid>
+
+        <!-- New Template Form -->
+        <Border Grid.Row="2" Background="#252538" CornerRadius="6" Padding="12" Margin="0,8,0,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="الاسم:" Foreground="#AAA" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="TemplateNameBox" Background="#2A2A3A" Foreground="White"
+                         BorderBrush="#444466" Padding="6,4" Margin="0,0,12,4"/>
+
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="الفصيل:" Foreground="#AAA" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <ComboBox Grid.Row="0" Grid.Column="3" x:Name="FactionCombo" Background="#2A2A3A" Foreground="White"
+                          BorderBrush="#444466" Padding="4" Margin="0,0,0,4"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="الوصف:" Foreground="#AAA" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" x:Name="TemplateDescBox" Background="#2A2A3A"
+                         Foreground="White" BorderBrush="#444466" Padding="6,4"/>
+            </Grid>
+        </Border>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="💾 حفظ قالب جديد" Click="SaveTemplate_Click" Width="140" Height="34"
+                    Background="#00884C" Foreground="White" BorderBrush="#00CC66" BorderThickness="1"
+                    FontWeight="Bold" Cursor="Hand" Margin="0,0,8,0">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="8,4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Content="✓ تطبيق المحدد" Click="ApplyTemplate_Click" Width="130" Height="34"
+                    Background="#2A4A5A" Foreground="White" BorderBrush="#4488AA" BorderThickness="1"
+                    Cursor="Hand" Margin="0,0,8,0">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="8,4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Content="إغلاق" Click="Close_Click" Width="80" Height="34"
+                    Background="#3A3A4A" Foreground="White" BorderBrush="#555577" BorderThickness="1" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="8,4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

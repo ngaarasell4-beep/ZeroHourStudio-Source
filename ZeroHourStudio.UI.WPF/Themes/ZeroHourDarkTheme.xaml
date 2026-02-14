@@ -1,0 +1,366 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- ZeroHour Studio v3.0 - Cyberpunk Military Dark Theme       -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+
+    <!-- ─── Color Palette ─── -->
+    <Color x:Key="BackgroundDeep">#FF0A0E17</Color>
+    <Color x:Key="BackgroundSurface">#FF111827</Color>
+    <Color x:Key="BackgroundPanel">#FF1A2332</Color>
+    <Color x:Key="BackgroundElevated">#FF243044</Color>
+    <Color x:Key="BackgroundHover">#FF2A3A52</Color>
+
+    <Color x:Key="AccentCyan">#FF00D4FF</Color>
+    <Color x:Key="AccentOrange">#FFFF6B00</Color>
+    <Color x:Key="AccentGreen">#FF00FF88</Color>
+    <Color x:Key="AccentRed">#FFFF3366</Color>
+    <Color x:Key="AccentGold">#FFFFD700</Color>
+
+    <Color x:Key="TextPrimary">#FFFFFFFF</Color>
+    <Color x:Key="TextSecondary">#FFAABBCC</Color>
+    <Color x:Key="TextMuted">#FF667788</Color>
+    <Color x:Key="BorderSubtle">#FF2A3A52</Color>
+    <Color x:Key="BorderGlow">#4400D4FF</Color>
+
+    <!-- ─── Solid Brushes ─── -->
+    <SolidColorBrush x:Key="BrushBackgroundDeep" Color="{StaticResource BackgroundDeep}"/>
+    <SolidColorBrush x:Key="BrushBackgroundSurface" Color="{StaticResource BackgroundSurface}"/>
+    <SolidColorBrush x:Key="BrushBackgroundPanel" Color="{StaticResource BackgroundPanel}"/>
+    <SolidColorBrush x:Key="BrushBackgroundElevated" Color="{StaticResource BackgroundElevated}"/>
+    <SolidColorBrush x:Key="BrushBackgroundHover" Color="{StaticResource BackgroundHover}"/>
+
+    <SolidColorBrush x:Key="BrushAccentCyan" Color="{StaticResource AccentCyan}"/>
+    <SolidColorBrush x:Key="BrushAccentOrange" Color="{StaticResource AccentOrange}"/>
+    <SolidColorBrush x:Key="BrushAccentGreen" Color="{StaticResource AccentGreen}"/>
+    <SolidColorBrush x:Key="BrushAccentRed" Color="{StaticResource AccentRed}"/>
+    <SolidColorBrush x:Key="BrushAccentGold" Color="{StaticResource AccentGold}"/>
+
+    <SolidColorBrush x:Key="BrushTextPrimary" Color="{StaticResource TextPrimary}"/>
+    <SolidColorBrush x:Key="BrushTextSecondary" Color="{StaticResource TextSecondary}"/>
+    <SolidColorBrush x:Key="BrushTextMuted" Color="{StaticResource TextMuted}"/>
+    <SolidColorBrush x:Key="BrushBorderSubtle" Color="{StaticResource BorderSubtle}"/>
+
+    <!-- ─── Glassmorphism Brush ─── -->
+    <LinearGradientBrush x:Key="BrushGlassPanel" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#18FFFFFF" Offset="0"/>
+        <GradientStop Color="#0CFFFFFF" Offset="0.5"/>
+        <GradientStop Color="#18FFFFFF" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BrushGlassBorder" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#3300D4FF" Offset="0"/>
+        <GradientStop Color="#1100D4FF" Offset="0.5"/>
+        <GradientStop Color="#3300D4FF" Offset="1"/>
+    </LinearGradientBrush>
+
+    <!-- ─── Geometric Grid Background Pattern ─── -->
+    <DrawingBrush x:Key="BrushGeometricGrid" TileMode="Tile" Viewport="0,0,40,40" ViewportUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing>
+                <GeometryDrawing.Pen>
+                    <Pen Brush="#08FFFFFF" Thickness="0.5"/>
+                </GeometryDrawing.Pen>
+                <GeometryDrawing.Geometry>
+                    <GeometryGroup>
+                        <LineGeometry StartPoint="0,0" EndPoint="40,0"/>
+                        <LineGeometry StartPoint="0,0" EndPoint="0,40"/>
+                    </GeometryGroup>
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <!-- ─── Neon Glow Effects ─── -->
+    <DropShadowEffect x:Key="GlowCyan" Color="{StaticResource AccentCyan}" BlurRadius="20" ShadowDepth="0" Opacity="0.6"/>
+    <DropShadowEffect x:Key="GlowCyanSubtle" Color="{StaticResource AccentCyan}" BlurRadius="10" ShadowDepth="0" Opacity="0.3"/>
+    <DropShadowEffect x:Key="GlowOrange" Color="{StaticResource AccentOrange}" BlurRadius="20" ShadowDepth="0" Opacity="0.6"/>
+    <DropShadowEffect x:Key="GlowGreen" Color="{StaticResource AccentGreen}" BlurRadius="15" ShadowDepth="0" Opacity="0.5"/>
+    <DropShadowEffect x:Key="GlowRed" Color="{StaticResource AccentRed}" BlurRadius="15" ShadowDepth="0" Opacity="0.5"/>
+    <DropShadowEffect x:Key="ElevationShadow" Color="#88000000" BlurRadius="15" ShadowDepth="4" Direction="270" Opacity="0.5"/>
+
+    <!-- ─── Glass Panel Style ─── -->
+    <Style x:Key="GlassPanel" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource BrushGlassPanel}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushGlassBorder}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Effect" Value="{StaticResource ElevationShadow}"/>
+    </Style>
+
+    <!-- ─── Button Styles ─── -->
+    <Style x:Key="CyberButton" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource BrushBackgroundElevated}"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushBorderSubtle}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="16,8"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6" Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="BdScale" ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <Border.RenderTransformOrigin>
+                            <Point X="0.5" Y="0.5"/>
+                        </Border.RenderTransformOrigin>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource BrushBackgroundHover}"/>
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource BrushAccentCyan}"/>
+                            <Setter TargetName="Bd" Property="Effect" Value="{StaticResource GlowCyanSubtle}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#FF1A2840"/>
+                            <Setter TargetName="Bd" Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="0.97" ScaleY="0.97"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.4"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="AccentButton" TargetType="Button" BasedOn="{StaticResource CyberButton}">
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FF0078D4" Offset="0"/>
+                    <GradientStop Color="#FF00A4EF" Offset="1"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="BorderBrush" Value="#FF00A4EF"/>
+    </Style>
+
+    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource CyberButton}">
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FFCC2244" Offset="0"/>
+                    <GradientStop Color="#FFFF3366" Offset="1"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushAccentRed}"/>
+    </Style>
+
+    <Style x:Key="OrangeButton" TargetType="Button" BasedOn="{StaticResource CyberButton}">
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FFCC5500" Offset="0"/>
+                    <GradientStop Color="#FFFF6B00" Offset="1"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushAccentOrange}"/>
+    </Style>
+
+    <!-- ─── TextBox Style ─── -->
+    <Style x:Key="CyberTextBox" TargetType="TextBox">
+        <Setter Property="Background" Value="{StaticResource BrushBackgroundSurface}"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushBorderSubtle}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="CaretBrush" Value="{StaticResource BrushAccentCyan}"/>
+        <Setter Property="SelectionBrush" Value="{StaticResource BrushAccentCyan}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6" Padding="{TemplateBinding Padding}">
+                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource BrushAccentCyan}"/>
+                            <Setter TargetName="Bd" Property="Effect" Value="{StaticResource GlowCyanSubtle}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ─── ComboBox Style ─── -->
+    <Style x:Key="CyberComboBox" TargetType="ComboBox">
+        <Setter Property="Background" Value="{StaticResource BrushBackgroundSurface}"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushBorderSubtle}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="FontSize" Value="13"/>
+    </Style>
+
+    <!-- ─── ListBox / ListBoxItem Style ─── -->
+    <Style x:Key="CyberListBox" TargetType="ListBox">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+        <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="True"/>
+    </Style>
+
+    <Style x:Key="CyberListBoxItem" TargetType="ListBoxItem">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+        <Setter Property="Padding" Value="4,2"/>
+        <Setter Property="Margin" Value="2"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                            CornerRadius="6" Padding="{TemplateBinding Padding}"
+                            BorderThickness="1" BorderBrush="Transparent">
+                        <ContentPresenter/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource BrushBackgroundHover}"/>
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource BrushBorderSubtle}"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#FF1A3050"/>
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource BrushAccentCyan}"/>
+                            <Setter TargetName="Bd" Property="Effect" Value="{StaticResource GlowCyanSubtle}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ─── TreeView Style ─── -->
+    <Style x:Key="CyberTreeView" TargetType="TreeView">
+        <Setter Property="Background" Value="{StaticResource BrushBackgroundSurface}"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushBorderSubtle}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
+    </Style>
+
+    <!-- ─── ProgressBar Style ─── -->
+    <Style x:Key="CyberProgressBar" TargetType="ProgressBar">
+        <Setter Property="Background" Value="{StaticResource BrushBackgroundSurface}"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushAccentCyan}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Height" Value="4"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Grid>
+                        <Border Background="{TemplateBinding Background}" CornerRadius="2"/>
+                        <Border x:Name="PART_Indicator" HorizontalAlignment="Left" CornerRadius="2">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#FF0078D4" Offset="0"/>
+                                    <GradientStop Color="#FF00D4FF" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="{StaticResource AccentCyan}" BlurRadius="8" ShadowDepth="0" Opacity="0.8"/>
+                            </Border.Effect>
+                        </Border>
+                        <Border x:Name="PART_Track"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ─── ScrollBar Minimal Style ─── -->
+    <Style x:Key="CyberScrollViewer" TargetType="ScrollViewer">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <!-- ─── TabControl Style ─── -->
+    <Style x:Key="CyberTabControl" TargetType="TabControl">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style x:Key="CyberTabItem" TargetType="TabItem">
+        <Setter Property="Foreground" Value="{StaticResource BrushTextMuted}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Padding" Value="12,6"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Border x:Name="Bd" Padding="{TemplateBinding Padding}"
+                            BorderThickness="0,0,0,2" BorderBrush="Transparent"
+                            Background="Transparent" Margin="0,0,4,0">
+                        <ContentPresenter ContentSource="Header" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource BrushAccentCyan}"/>
+                            <Setter Property="Foreground" Value="{StaticResource BrushAccentCyan}"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ─── Badge / Tag Styles ─── -->
+    <Style x:Key="CyanBadge" TargetType="Border">
+        <Setter Property="Background" Value="#2200D4FF"/>
+        <Setter Property="BorderBrush" Value="#4400D4FF"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Padding" Value="8,2"/>
+    </Style>
+
+    <Style x:Key="OrangeBadge" TargetType="Border">
+        <Setter Property="Background" Value="#22FF6B00"/>
+        <Setter Property="BorderBrush" Value="#44FF6B00"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Padding" Value="8,2"/>
+    </Style>
+
+    <Style x:Key="GreenBadge" TargetType="Border">
+        <Setter Property="Background" Value="#2200FF88"/>
+        <Setter Property="BorderBrush" Value="#4400FF88"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Padding" Value="8,2"/>
+    </Style>
+
+    <Style x:Key="RedBadge" TargetType="Border">
+        <Setter Property="Background" Value="#22FF3366"/>
+        <Setter Property="BorderBrush" Value="#44FF3366"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Padding" Value="8,2"/>
+    </Style>
+
+</ResourceDictionary>

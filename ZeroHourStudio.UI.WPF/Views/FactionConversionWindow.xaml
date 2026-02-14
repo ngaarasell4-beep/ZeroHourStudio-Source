@@ -1,0 +1,151 @@
+<Window x:Class="ZeroHourStudio.UI.WPF.Views.FactionConversionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="🎯 تحويل فصيل الوحدة"
+        Width="700" Height="550"
+        WindowStartupLocation="CenterOwner"
+        Background="#1E1E2E"
+        Foreground="White"
+        FontFamily="Segoe UI">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="🎯 تحويل فصيل الوحدة" FontSize="20" FontWeight="Bold" Foreground="#00CC66"/>
+            <TextBlock x:Name="UnitInfoText" Foreground="#AAAAAA" FontSize="12" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Faction Selection -->
+        <Border Grid.Row="1" Background="#252538" CornerRadius="6" Padding="12,8" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="من فصيل:" Foreground="#AAAAAA" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ComboBox Grid.Column="1" x:Name="SourceFactionCombo" Background="#2A2A3A" Foreground="White"
+                          BorderBrush="#444466" Padding="6,4" Margin="0,0,16,0"
+                          SelectionChanged="FactionCombo_SelectionChanged">
+                    <ComboBoxItem Content="USA" IsSelected="True"/>
+                    <ComboBoxItem Content="China"/>
+                    <ComboBoxItem Content="GLA"/>
+                </ComboBox>
+
+                <TextBlock Grid.Column="2" Text="إلى فصيل:" Foreground="#AAAAAA" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ComboBox Grid.Column="3" x:Name="TargetFactionCombo" Background="#2A2A3A" Foreground="White"
+                          BorderBrush="#444466" Padding="6,4"
+                          SelectionChanged="FactionCombo_SelectionChanged">
+                    <ComboBoxItem Content="USA"/>
+                    <ComboBoxItem Content="China" IsSelected="True"/>
+                    <ComboBoxItem Content="GLA"/>
+                </ComboBox>
+            </Grid>
+        </Border>
+
+        <!-- Conversion Options -->
+        <Border Grid.Row="2" Background="#252538" CornerRadius="6" Padding="12,8" Margin="0,0,0,10">
+            <StackPanel Orientation="Horizontal">
+                <CheckBox x:Name="ChkVoice" Content="🔊 أصوات" IsChecked="True" Foreground="#CCCCCC"
+                          Margin="0,0,14,0" Click="Option_Changed"/>
+                <CheckBox x:Name="ChkColor" Content="🎨 ألوان" IsChecked="True" Foreground="#CCCCCC"
+                          Margin="0,0,14,0" Click="Option_Changed"/>
+                <CheckBox x:Name="ChkPrefix" Content="🏷 بادئات" IsChecked="True" Foreground="#CCCCCC"
+                          Margin="0,0,14,0" Click="Option_Changed"/>
+                <CheckBox x:Name="ChkWeapon" Content="🔫 أسلحة" IsChecked="False" Foreground="#CCCCCC"
+                          Margin="0,0,14,0" Click="Option_Changed"/>
+                <CheckBox x:Name="ChkUpgrade" Content="⬆ ترقيات" IsChecked="False" Foreground="#CCCCCC"
+                          Click="Option_Changed"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Preview Changes List + empty state -->
+        <Grid Grid.Row="3">
+            <ListBox x:Name="ChangesList" Background="#1A1A2A" BorderBrush="#333348" BorderThickness="1">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="4,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Change Type Badge -->
+                        <Border Grid.Column="0" Background="#2A3A4A" CornerRadius="4" Padding="4,2" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding ChangeType}" Foreground="#87CEEB" FontSize="10" HorizontalAlignment="Center"/>
+                        </Border>
+
+                        <!-- Field Name -->
+                        <TextBlock Grid.Column="1" Text="{Binding Field}" Foreground="#CCCCCC" FontSize="12"
+                                   VerticalAlignment="Center" Margin="8,0"/>
+
+                        <!-- Old Value -->
+                        <TextBlock Grid.Column="2" Text="{Binding OldValue}" Foreground="#FF6666" FontSize="11"
+                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+
+                        <!-- Arrow -->
+                        <TextBlock Grid.Column="3" Text="→" Foreground="#555577" FontSize="14"
+                                   VerticalAlignment="Center" Margin="8,0"/>
+
+                        <!-- New Value -->
+                        <TextBlock Grid.Column="4" Text="{Binding NewValue}" Foreground="#00CC66" FontSize="11"
+                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Padding" Value="2"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            </ListBox>
+            <TextBlock x:Name="NoContentMessage" Visibility="Collapsed"
+                       Text="لم يتم تحميل محتوى الوحدة. تأكد من تحميل المود المصدر وأن الوحدة من ملف INI مفكوك."
+                       Foreground="#888" FontSize="13" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24"/>
+        </Grid>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+            <TextBlock x:Name="ChangesCountText" Foreground="#AAAAAA" FontSize="11" VerticalAlignment="Center" Margin="0,0,16,0"/>
+            <Button Content="إلغاء" Click="Cancel_Click" Width="80" Height="34"
+                    Background="#3A3A4A" Foreground="White" BorderBrush="#555577" BorderThickness="1"
+                    Cursor="Hand" Margin="0,0,8,0">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="8,4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Content="🎯 تطبيق التحويل" Click="Apply_Click" Width="140" Height="34"
+                    Background="#00884C" Foreground="White" BorderBrush="#00CC66" BorderThickness="1"
+                    FontWeight="Bold" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="8,4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,173 @@
+<UserControl x:Class="ZeroHourStudio.UI.WPF.Views.SourcePaneView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:ZeroHourStudio.UI.WPF.Converters"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <conv:ButtonImageToIconConverter x:Key="IconConverter"/>
+        <conv:FactionToAccentColorConverter x:Key="FactionToColor"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <Border CornerRadius="12" BorderBrush="#1A2332" BorderThickness="1"
+            Background="#0D1117">
+        <Grid Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                <Border Width="4" Height="20" CornerRadius="2" Background="#00D4FF"/>
+                <TextBlock Text="المود المصدر" FontSize="14" FontWeight="SemiBold"
+                           Foreground="#E8EDF3" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="SOURCE" FontSize="10" Foreground="#556677"
+                           Margin="8,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Path Browser -->
+            <Grid Grid.Row="1" Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Text="{Binding ModPath, UpdateSourceTrigger=PropertyChanged}"
+                         Background="#161B22" Foreground="#C9D1D9" BorderBrush="#21262D"
+                         Padding="8,6" FontSize="11" VerticalContentAlignment="Center"/>
+                <Button Grid.Column="1" Content="..." Margin="4,0,0,0" Padding="10,6"
+                        Background="#21262D" Foreground="#C9D1D9" BorderBrush="#30363D"
+                        Click="BrowseSource_Click" Cursor="Hand"/>
+            </Grid>
+
+            <!-- Load Button -->
+            <Button Grid.Row="2" Content="⚡ تحميل المود" Command="{Binding LoadModCommand}"
+                    Background="#00D4FF" Foreground="#0A0E17" FontWeight="Bold"
+                    Padding="0,8" Margin="0,0,0,8" FontSize="12" Cursor="Hand" BorderThickness="0"/>
+
+            <!-- Faction + Search -->
+            <Grid Grid.Row="3" Margin="0,0,0,8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <ComboBox Grid.Row="0" ItemsSource="{Binding Factions}"
+                          SelectedItem="{Binding SelectedFaction}"
+                          Background="#161B22" Foreground="#C9D1D9"
+                          BorderBrush="#21262D" Padding="8,6" Margin="0,0,0,6"
+                          FontSize="11"/>
+
+                <TextBox Grid.Row="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Background="#161B22" Foreground="#C9D1D9" BorderBrush="#21262D"
+                         Padding="8,6" FontSize="11">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter Property="BorderBrush" Value="#00D4FF"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </Grid>
+
+            <!-- Unit List (Virtualized) -->
+            <ListBox Grid.Row="4" ItemsSource="{Binding Units}"
+                     SelectedItem="{Binding SelectedUnit}"
+                     Background="Transparent" BorderThickness="0"
+                     VirtualizingPanel.IsVirtualizing="True"
+                     VirtualizingPanel.VirtualizationMode="Recycling"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     PreviewMouseLeftButtonDown="UnitList_PreviewMouseLeftButtonDown"
+                     PreviewMouseMove="UnitList_PreviewMouseMove">
+
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Foreground" Value="#C9D1D9"/>
+                        <Setter Property="Padding" Value="8,6"/>
+                        <Setter Property="Margin" Value="0,1"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                            CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background" Value="#161B22"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Bd" Property="Background" Value="#1A2332"/>
+                                            <Setter TargetName="Bd" Property="BorderBrush" Value="#00D4FF"/>
+                                            <Setter TargetName="Bd" Property="BorderThickness" Value="1"/>
+                                            <Setter TargetName="Bd" Property="Effect">
+                                                <Setter.Value>
+                                                    <DropShadowEffect Color="#00D4FF" BlurRadius="8" ShadowDepth="0" Opacity="0.3"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4"/>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Faction Color Strip -->
+                            <Border Grid.Column="0" CornerRadius="2"
+                                    Background="{Binding Side, Converter={StaticResource FactionToColor}}"
+                                    Width="4" Margin="0,2"/>
+
+                            <!-- Icon -->
+                            <Border Grid.Column="1" Width="36" Height="36" CornerRadius="4"
+                                    Background="#161B22" Margin="6,0">
+                                <Image Source="{Binding ButtonImage, Converter={StaticResource IconConverter}}"
+                                       Stretch="Uniform" Margin="2"/>
+                            </Border>
+
+                            <!-- Name + Side -->
+                            <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding TechnicalName}" FontSize="12"
+                                           Foreground="#E8EDF3" FontWeight="Medium"
+                                           TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Text="{Binding Side}" FontSize="10"
+                                           Foreground="#556677" Margin="0,2,0,0"/>
+                            </StackPanel>
+
+                            <!-- Build Cost Badge -->
+                            <Border Grid.Column="3" Background="#161B22" CornerRadius="4"
+                                    Padding="6,2" VerticalAlignment="Center"
+                                    Visibility="{Binding BuildCost, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Text="{Binding BuildCost, StringFormat=${0}}"
+                                           FontSize="10" Foreground="#00FF88"/>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- Status -->
+            <TextBlock Grid.Row="5" Text="{Binding StatusText}"
+                       Foreground="#556677" FontSize="10" Margin="0,6,0,0"/>
+        </Grid>
+    </Border>
+</UserControl>

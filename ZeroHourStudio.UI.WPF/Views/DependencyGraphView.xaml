@@ -1,0 +1,115 @@
+<UserControl x:Class="ZeroHourStudio.UI.WPF.Views.DependencyGraphView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:ZeroHourStudio.UI.WPF.Converters"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <conv:AssetStatusToColorConverter x:Key="StatusToColor"/>
+        <conv:DependencyTypeToIconConverter x:Key="TypeToIcon"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <Border CornerRadius="12" BorderBrush="#1A2332" BorderThickness="1"
+            Background="#0D1117">
+        <Grid Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                <Border Width="4" Height="20" CornerRadius="2" Background="#00FF88"/>
+                <TextBlock Text="شجرة التبعيات" FontSize="14" FontWeight="SemiBold"
+                           Foreground="#E8EDF3" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="DEPENDENCY GRAPH" FontSize="10" Foreground="#556677"
+                           Margin="8,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Stats Bar -->
+            <Border Grid.Row="1" CornerRadius="8" Background="#161B22" Padding="10,6" Margin="0,0,0,8">
+                <WrapPanel>
+                    <!-- Total -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                        <TextBlock Text="الكل" Foreground="#556677" FontSize="10" VerticalAlignment="Center"/>
+                        <Border Background="#1A2332" CornerRadius="4" Padding="6,2" Margin="6,0,0,0">
+                            <TextBlock Text="{Binding TotalCount}" Foreground="#E8EDF3" FontSize="11" FontWeight="Bold"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Found -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                        <TextBlock Text="✓ موجود" Foreground="#00FF88" FontSize="10" VerticalAlignment="Center"/>
+                        <Border Background="#0D2818" CornerRadius="4" Padding="6,2" Margin="6,0,0,0">
+                            <TextBlock Text="{Binding FoundCount}" Foreground="#00FF88" FontSize="11" FontWeight="Bold"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Missing -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                        <TextBlock Text="✗ مفقود" Foreground="#FF3366" FontSize="10" VerticalAlignment="Center"/>
+                        <Border Background="#2D0D18" CornerRadius="4" Padding="6,2" Margin="6,0,0,0">
+                            <TextBlock Text="{Binding MissingCount}" Foreground="#FF3366" FontSize="11" FontWeight="Bold"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Weapons -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                        <TextBlock Text="⚔ أسلحة" Foreground="#FF6B00" FontSize="10" VerticalAlignment="Center"/>
+                        <Border Background="#2D1A0D" CornerRadius="4" Padding="6,2" Margin="6,0,0,0">
+                            <TextBlock Text="{Binding WeaponCount}" Foreground="#FF6B00" FontSize="11" FontWeight="Bold"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Completion -->
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding CompletionPercentage, StringFormat={}{0:F0}%}"
+                                   Foreground="#00D4FF" FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </WrapPanel>
+            </Border>
+
+            <!-- TreeView -->
+            <TreeView Grid.Row="2" ItemsSource="{Binding RootNodes}"
+                      Background="Transparent" BorderThickness="0"
+                      VirtualizingPanel.IsVirtualizing="True">
+
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type local:DependencyNodeVM}"
+                                               ItemsSource="{Binding Children}"
+                                               xmlns:local="clr-namespace:ZeroHourStudio.UI.WPF.ViewModels">
+                        <StackPanel Orientation="Horizontal" Margin="2,1">
+                            <!-- Status Icon -->
+                            <TextBlock Text="{Binding StatusText}" FontSize="11" Margin="0,0,6,0"
+                                       Foreground="{Binding Status, Converter={StaticResource StatusToColor}}"/>
+
+                            <!-- Type Icon -->
+                            <TextBlock Text="{Binding Type, Converter={StaticResource TypeToIcon}}"
+                                       FontSize="12" Margin="0,0,6,0"
+                                       Foreground="{Binding TypeColor}"/>
+
+                            <!-- Name -->
+                            <TextBlock Text="{Binding Name}" FontSize="11"
+                                       Foreground="#C9D1D9"/>
+
+                            <!-- Type Badge -->
+                            <Border Background="#1A2332" CornerRadius="3" Padding="4,1" Margin="8,0,0,0">
+                                <TextBlock Text="{Binding Type}" FontSize="9" Foreground="#556677"/>
+                            </Border>
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </TreeView.Resources>
+
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="TreeViewItem">
+                        <Setter Property="Foreground" Value="#C9D1D9"/>
+                        <Setter Property="IsExpanded" Value="True"/>
+                        <Setter Property="Padding" Value="2"/>
+                    </Style>
+                </TreeView.ItemContainerStyle>
+            </TreeView>
+        </Grid>
+    </Border>
+</UserControl>
